@@ -2,23 +2,21 @@ import { createBrowserRouter, redirect } from 'react-router'
 import { Layout } from './components/layout/Layout'
 import { useAuthStore } from './store/authStore'
 
-// ─── Guards ───────────────────────────────────────────────────────────────────
+//Guards
 
-/** Redirects to /login if not authenticated */
 const authLoader = () => {
   const token = useAuthStore.getState().accessToken
   if (!token) throw redirect('/login')
   return null
 }
 
-/** Redirects to /profile if already authenticated */
 const guestLoader = () => {
   const token = useAuthStore.getState().accessToken
   if (token) throw redirect('/profile')
   return null
 }
 
-// ─── Router ───────────────────────────────────────────────────────────────────
+//Router
 
 export const router = createBrowserRouter([
   // Root redirect
@@ -30,7 +28,7 @@ export const router = createBrowserRouter([
     },
   },
 
-  // Guest-only routes (redirect to profile if logged in)
+  // Guest-only routes
   {
     path: '/login',
     loader: guestLoader,
@@ -67,7 +65,7 @@ export const router = createBrowserRouter([
     lazy: () => import('./pages/auth/NewPasswordPage').then((m) => ({ Component: m.NewPasswordPage })),
   },
 
-  // Protected routes (redirect to login if not logged in)
+  // Protected routes
   {
     Component: Layout,
     children: [

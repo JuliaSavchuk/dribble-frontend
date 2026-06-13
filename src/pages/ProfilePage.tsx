@@ -7,7 +7,7 @@ import { Input } from '../components/ui/Input'
 import { Alert } from '../components/ui/Alert'
 import { Spinner } from '../components/ui/Spinner'
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
+//Stat Card
 const StatCard = ({ value, label }: { value: number; label: string }) => (
   <div className="flex flex-col items-center gap-0.5">
     <span className="text-2xl font-extrabold text-white">{value}</span>
@@ -15,7 +15,7 @@ const StatCard = ({ value, label }: { value: number; label: string }) => (
   </div>
 )
 
-// ─── Social Input ─────────────────────────────────────────────────────────────
+//Social Input
 const SocialInput = ({
   label,
   icon,
@@ -49,7 +49,7 @@ const SocialInput = ({
   </div>
 )
 
-// ─── Social icons ─────────────────────────────────────────────────────────────
+//Social icons
 const TwitterIcon = () => (
   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -74,7 +74,7 @@ const WebIcon = () => (
   </svg>
 )
 
-// ─── Main component ───────────────────────────────────────────────────────────
+//Main component
 
 export const ProfilePage = () => {
   const navigate = useNavigate()
@@ -83,7 +83,7 @@ export const ProfilePage = () => {
   const { data: profile, isLoading } = useProfile()
   const updateMutation = useUpdateProfile()
 
-  // Local form state
+  //Local form state
   const [bio, setBio] = useState('')
   const [website, setWebsite] = useState('')
   const [twitter, setTwitter] = useState('')
@@ -95,7 +95,7 @@ export const ProfilePage = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Sync form state when profile loads
+  //Sync form state when profile loads
   useEffect(() => {
     if (profile) {
       setBio(profile.bio ?? '')
@@ -107,7 +107,7 @@ export const ProfilePage = () => {
         setAvatarPreview(profile.avatar)
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile])
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +138,7 @@ export const ProfilePage = () => {
     navigate('/login')
   }
 
-  // ─── Loading state ──────────────────────────────────────────────────────────
+  //Loading state
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">

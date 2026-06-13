@@ -8,8 +8,6 @@ export const api = axios.create({
   },
 })
 
-//Request interceptor: attach token
-
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
   if (token && config.headers) {
@@ -18,7 +16,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-//Response interceptor: handle 401 & token refresh
 
 api.interceptors.response.use(
   (response) => response,
@@ -31,7 +28,6 @@ api.interceptors.response.use(
 
       if (refresh) {
         try {
-          // Refresh without triggering the interceptor again
           const { data } = await axios.post(
             `${api.defaults.baseURL}/auth/token/refresh/`,
             { refresh }

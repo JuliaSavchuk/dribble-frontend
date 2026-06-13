@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router'
 import { useAuthStore } from '../../store/authStore'
 import { Button } from '../ui/Button'
 
-// ─── Dribbble-style logo SVG ──────────────────────────────────────────────────
+//Dribbble-style logo SVG
 const DribbbleLogo = () => (
   <svg
     viewBox="0 0 24 24"

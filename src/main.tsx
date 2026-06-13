@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { router } from './router'
 import './index.css'
 
-// ─── Query Client ─────────────────────────────────────────────────────────────
+//Query Client
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
   },
 })
 
-// ─── MSW bootstrapping ────────────────────────────────────────────────────────
+//MSW bootstrapping
 
 async function enableMocking() {
   if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCKS === 'true') {
@@ -29,8 +29,7 @@ async function enableMocking() {
   }
 }
 
-// ─── Render ───────────────────────────────────────────────────────────────────
-
+//Render
 enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>

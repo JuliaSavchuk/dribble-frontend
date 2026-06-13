@@ -21,7 +21,7 @@ export const RegisterEmailPage = () => {
   }
 
   const handleGoogle = () => {
-    // In production: trigger the Google OAuth flow
+    // У виробничому середовищі: запустити процес аутентифікації Google OAuth
     navigate('/register/profile')
   }
 

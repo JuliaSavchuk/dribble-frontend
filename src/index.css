@@ -3,7 +3,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* Voxel color palette */
   --color-voxel-black: #000000;
   --color-voxel-teal: #00B4B1;
   --color-voxel-cyan: #00FFFB;
@@ -17,7 +16,6 @@
   --color-voxel-apricot: #FFC973;
   --color-voxel-white: #FFFFFF;
 
-  /* Fonts */
   --font-script: 'Kaushan Script', cursive;
   --font-display: 'Host Grotesk', sans-serif;
   --font-kings: 'Kings', serif;
@@ -35,7 +33,6 @@
   }
 }
 
-/* Slow background pan, right to left */
 @keyframes bg-pan {
   0% {
     transform: translateX(0);

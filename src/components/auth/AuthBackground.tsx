@@ -1,4 +1,3 @@
-// src/components/auth/AuthBackground.tsx
 import type { ReactNode } from 'react'
 import bgImage from '../../assets/auth-bg.jpg'
 
