@@ -1,108 +1,111 @@
-# Dribbble Clone — Frontend (Фаза 1)
+# Voxel — Dribbble Clone (Frontend)
 
-React + TypeScript + Tailwind CSS v4 + Zustand + TanStack Query v5 + React Router v7
+Сучасний фронтенд для клона Dribbble під назвою **Voxel**, розроблений з урахуванням специфікацій Фази 1.
 
-## Стек
+## Стек технологій
 
-| Технологія | Версія |
-|---|---|
-| React | ^19 |
-| TypeScript | ~5.8 |
-| Tailwind CSS | ^4.3 |
-| React Router | ^7.17 |
-| TanStack Query | ^5 |
-| Zustand | ^5 |
-| Axios | ^1.9 |
-| MSW | ^2 |
+| Технологія              | Версія      |
+|-------------------------|-------------|
+| React                   | ^19         |
+| TypeScript              | ~5.8        |
+| Tailwind CSS            | ^4.3        |
+| React Router            | ^7.17       |
+| TanStack Query (React Query) | ^5     |
+| Zustand                 | ^5          |
+| Axios                   | ^1.9        |
+| MSW (Mock Service)      | ^2          |
+
+## Основні можливості (Фаза 1)
+
+- Реєстрація та авторизація (Email + Password)
+- Вхід через Google (mock)
+- Захищені маршрути
+- Оновлення профілю (включаючи аватар)
+- Автоматичне оновлення токенів (refresh token)
+- Mock Service Worker для незалежної розробки
+- Повністю типізований код
 
 ## Швидкий старт
 
 ```bash
-# 1. Встановити залежності
+# 1. Встановлення залежностей
 npm install
 
-# 2. Ініціалізувати MSW service worker у папці public/
+# 2. Ініціалізація MSW (якщо ще не зроблено)
 npx msw init public/ --save
 
-# 3. Запустити сервер розробки
+# 3. Запуск у режимі розробки
 npm run dev
 ```
 
-Відкрийте http://localhost:5173
+Відкрийте [http://localhost:5173](http://localhost:5173)
 
-## Демо-акаунт
+### Демо-акаунт
 
-```
-Email:    designer@example.com
-Password: PassWord123!
-```
+- **Email**: `designer@example.com`
+- **Пароль**: `PassWord123!`
 
 ## Конфігурація (.env)
 
 ```env
+# API
 VITE_API_BASE_URL=http://localhost:8000/api
-VITE_USE_MOCKS=true   # true = MSW mock, false = реальний бекенд
+
+# Режим моків (для розробки без бекенду)
+VITE_USE_MOCKS=true
 ```
 
 ## Структура проєкту
 
 ```
 src/
-├── api/
-│   └── index.ts          # Axios клієнт з interceptors
+├── api/                  # Axios клієнт + typed API
 ├── components/
-│   ├── layout/
-│   │   ├── Layout.tsx    # Основний layout з Navbar
-│   │   └── Navbar.tsx    # Навігаційна панель
-│   └── ui/
-│       ├── Alert.tsx     # Компонент сповіщень
-│       ├── Button.tsx    # Кнопка (primary/secondary/ghost/danger)
-│       ├── Input.tsx     # Поле вводу з label та error
-│       └── Spinner.tsx   # Індикатор завантаження
-├── hooks/
-│   └── useAuth.ts        # useLogin, useRegister, useProfile, useUpdateProfile
-├── mocks/
-│   ├── browser.ts        # MSW worker setup
-│   └── handlers/
-│       └── auth.ts       # Хендлери авторизації
-├── pages/
-│   ├── LoginPage.tsx     # Сторінка входу
-│   ├── RegisterPage.tsx  # Сторінка реєстрації
-│   ├── ProfilePage.tsx   # Профіль користувача
-│   └── NotFoundPage.tsx  # 404 сторінка
-├── store/
-│   └── authStore.ts      # Zustand store з persist
-├── types/
-│   └── index.ts          # TypeScript типи
-├── utils/
-│   └── cn.ts             # Утиліта для класів Tailwind
-├── main.tsx              # Точка входу
-├── router.tsx            # React Router v7
-└── index.css             # Tailwind v4 + теми
+│   ├── auth/             # Компоненти для сторінок авторизації
+│   ├── layout/           # Layout, Navbar
+│   └── ui/               # Базові UI компоненти
+├── hooks/                # Кастомні React hooks
+├── mocks/                # MSW handlers
+├── pages/                # Сторінки (Login, Register, Profile...)
+├── store/                # Zustand stores
+├── types/                # TypeScript типи
+├── utils/                # Утиліти (cn.ts)
+├── main.tsx
+├── router.tsx
+└── index.css             # Tailwind + глобальні стилі
 ```
 
 ## Маршрути
 
-| Шлях | Опис | Доступ |
-|---|---|---|
-| `/` | Редирект на `/login` або `/profile` | Публічний |
-| `/login` | Сторінка входу | Тільки гості |
-| `/register` | Сторінка реєстрації | Тільки гості |
-| `/profile` | Профіль користувача | Тільки авторизовані |
+| Шлях           | Опис                     | Доступ          |
+|----------------|--------------------------|-----------------|
+| `/`            | Редирект                 | -               |
+| `/login`       | Сторінка входу           | Гості           |
+| `/register`    | Сторінка реєстрації      | Гості           |
+| `/profile`     | Особистий профіль        | Авторизовані    |
 
-## Перемикання на реальний бекенд
 
-Змініть `.env`:
-```env
-VITE_USE_MOCKS=false
-VITE_API_BASE_URL=http://localhost:8000/api
-```
+## Перехід на реальний бекенд
+1. Змініть у `.env`:
+   ```env
+   VITE_USE_MOCKS=false
+   ```
+2. Перезапустіть додаток (`npm run dev`).
+
 
 ## Команди
-
 ```bash
-npm run dev      # Сервер розробки
+npm run dev      # Розробка
 npm run build    # Production build
-npm run preview  # Перегляд production build
-npm run lint     # ESLint перевірка
+npm run preview  # Перегляд білду
+npm run lint     # Лінтер
 ```
+
+
+## Відповідність ТЗ
+- Повністю відповідає **Phase 0 API Contract** (Auth ендпоінти).
+- Реалізовано згідно з **Phase 1 Frontend Specification**.
+- Підтримка `multipart/form-data` для аватара.
+- Правильна обробка помилок відповідно до DRF стандарту.
+
+---
