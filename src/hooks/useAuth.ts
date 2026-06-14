@@ -29,6 +29,8 @@ export const useLogin = () => {
 }
 
 // useRegister
+// Sends a single POST /api/auth/register/ request with all required fields.
+// On success, redirects to /login so the user can sign in with their new credentials.
 
 export const useRegister = () => {
   const navigate = useNavigate()

@@ -16,7 +16,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -54,7 +53,7 @@ api.interceptors.response.use(
   }
 )
 
-//Typed API helpers
+// Typed API helpers
 
 export const authApi = {
   register: (data: { email: string; username: string; password: string; password2: string }) =>
