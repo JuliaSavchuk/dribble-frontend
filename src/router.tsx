@@ -1,28 +1,40 @@
-import { createBrowserRouter, redirect } from 'react-router'
+import { createBrowserRouter, redirect, Navigate, Outlet } from 'react-router'
 import { Layout } from './components/layout/Layout'
 import { useAuthStore } from './store/authStore'
 
-// Guards
+// ─── Route guards ─────────────────────────────────────────────────────────────
+//
+// Проблема з loader(): React Router викликає loader() синхронно, ще до того як
+// Zustand встигає відновити стан з localStorage (persist middleware асинхронний).
+// При першому рендері useAuthStore.getState().accessToken завжди null →
+// автентифікований юзер безпідставно редиректиться на /login.
+//
+// Рішення: перевірка стану у компонентах, де Zustand вже гідрований.
 
-const authLoader = () => {
-  const token = useAuthStore.getState().accessToken
-  if (!token) throw redirect('/login')
-  return null
+// Захищений маршрут — редиректить на /login якщо немає токена
+const ProtectedRoute = () => {
+  const token = useAuthStore((state) => state.accessToken)
+  if (!token) return <Navigate to="/login" replace />
+  return <Outlet />
 }
 
-const guestLoader = () => {
-  const token = useAuthStore.getState().accessToken
-  if (token) throw redirect('/profile')
-  return null
+// Гостьовий маршрут — редиректить на /profile якщо юзер вже залогінений
+const GuestRoute = () => {
+  const token = useAuthStore((state) => state.accessToken)
+  if (token) return <Navigate to="/profile" replace />
+  return <Outlet />
 }
 
-// Router
+// ─── Router ───────────────────────────────────────────────────────────────────
 
 export const router = createBrowserRouter([
   // Root redirect
   {
     path: '/',
     loader: () => {
+      // Тут loader безпечний: ми лише читаємо синхронний стан для першого
+      // переходу. Якщо store ще не гідрований — юзер потрапить на /login,
+      // де GuestRoute перевірить стан повторно після гідрації.
       const token = useAuthStore.getState().accessToken
       throw redirect(token ? '/profile' : '/login')
     },
@@ -30,25 +42,32 @@ export const router = createBrowserRouter([
 
   // Guest-only routes
   {
-    path: '/login',
-    loader: guestLoader,
-    lazy: () => import('./pages/auth/LoginPage').then((m) => ({ Component: m.LoginPage })),
-  },
-  {
-    path: '/register',
-    loader: guestLoader,
-    lazy: () => import('./pages/auth/RegisterPage').then((m) => ({ Component: m.RegisterPage })),
+    Component: GuestRoute,
+    children: [
+      {
+        path: '/login',
+        lazy: () => import('./pages/auth/LoginPage').then((m) => ({ Component: m.LoginPage })),
+      },
+      {
+        path: '/register',
+        lazy: () => import('./pages/auth/RegisterPage').then((m) => ({ Component: m.RegisterPage })),
+      },
+    ],
   },
 
   // Protected routes
   {
-    Component: Layout,
+    Component: ProtectedRoute,
     children: [
       {
-        path: '/profile',
-        loader: authLoader,
-        lazy: () =>
-          import('./pages/ProfilePage').then((m) => ({ Component: m.ProfilePage })),
+        Component: Layout,
+        children: [
+          {
+            path: '/profile',
+            lazy: () =>
+              import('./pages/ProfilePage').then((m) => ({ Component: m.ProfilePage })),
+          },
+        ],
       },
     ],
   },

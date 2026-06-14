@@ -72,9 +72,5 @@ export const authApi = {
     api.get('/auth/profile/'),
 
   updateProfile: (data: FormData | Record<string, unknown>) =>
-    api.patch('/auth/profile/', data, {
-      headers: data instanceof FormData
-        ? { 'Content-Type': 'multipart/form-data' }
-        : { 'Content-Type': 'application/json' },
-    }),
+    api.patch('/auth/profile/', data),
 }
