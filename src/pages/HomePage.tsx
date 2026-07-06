@@ -5,62 +5,9 @@ import { useFeedQuery } from '../hooks/useShots'
 import { Button } from '../components/ui/Button'
 import { ShotCard } from '../components/ui/ShotCard'
 import { CollageTile } from '../components/ui/CollageTile'
+import { HOME_COLLAGE } from '../mocks/data/homeCollage'
 
 const POPULAR_TAGS = ['branding', 'web design', 'ui kit', 'wireframes', 'typography', 'icon sets', '3d design']
-
-// Декоративний колаж у хіро-блоці (маркетингові зображення, не з бекенду)
-// Сума col-span × row-span усіх тайлів дорівнює 5×2=10 клітинок гріда —
-// рівно стільки, скільки їх у контейнері (grid-cols-5 grid-rows-2), тож
-// авто-розміщення заповнює сітку без "зайвого" третього рядка.
-// Розмір тайлу тепер визначає сам grid-item (col/row-span), а не окремий
-// aspect-ratio на тайлі — це і прибирає конфлікт, через який колаж
-// "стискався в купу" на проміжних ширинах екрана.
-const COLLAGE: { image: string; label: string; count: string; className: string; dark?: boolean }[] = [
-  {
-    image: 'https://images.unsplash.com/photo-1596466596120-2d8173f3e19c?auto=format&fit=crop&w=400&q=80',
-    label: 'Tattoo',
-    count: '3k',
-    className: 'col-span-1 row-span-1',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=400&q=80',
-    label: 'Poster',
-    count: '4k',
-    className: 'col-span-1 row-span-1',
-    dark: false,
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?auto=format&fit=crop&w=500&q=80',
-    label: 'Advert',
-    count: '9k',
-    className: 'col-span-2 row-span-1',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=400&q=80',
-    label: 'Deck',
-    count: '5k',
-    className: 'col-span-1 row-span-2',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?auto=format&fit=crop&w=500&q=80',
-    label: '3d Designe',
-    count: '2k',
-    className: 'col-span-2 row-span-1',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1611926653458-09294b3142bf?auto=format&fit=crop&w=400&q=80',
-    label: 'Graphics',
-    count: '25k',
-    className: 'col-span-1 row-span-1',
-    dark: false,
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?auto=format&fit=crop&w=400&q=80',
-    label: 'Ai',
-    count: '30k',
-    className: 'col-span-1 row-span-1',
-  },
-]
 
 export const HomePage = () => {
   const user = useAuthStore((s) => s.user)
@@ -102,13 +49,8 @@ export const HomePage = () => {
           </div>
         </div>
 
-        {/* Колаж — 5 колонок × 2 рядки (сума span'ів тайлів = 10 = 5×2, тому
-           жодних "зайвих" рядків не з'являється). Висота рядків тепер похідна
-           від aspect-ratio контейнера, а не від жорсткого auto-rows-[110px] —
-           саме конфлікт fixed px-рядків з aspect-ratio тайлів ламав розкладку
-           на проміжних ширинах екрана. */}
         <div className="grid grid-cols-5 grid-rows-2 gap-3 sm:gap-4 aspect-16/7 w-full">
-          {COLLAGE.map((tile) => (
+          {HOME_COLLAGE.map((tile) => (
             <CollageTile key={tile.label} {...tile} />
           ))}
         </div>

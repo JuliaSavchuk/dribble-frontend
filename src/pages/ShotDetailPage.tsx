@@ -5,6 +5,7 @@ import { useShotQuery, useDeleteShotMutation, useLikeShotMutation, useSaveShotMu
 import { useCommentsQuery, useAddCommentMutation } from '../hooks/useComments'
 import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
+import { Avatar } from '../components/ui/Avatar'
 import { cn } from '../utils/cn'
 
 export const ShotDetailPage = () => {
@@ -65,10 +66,10 @@ export const ShotDetailPage = () => {
           <h1 className="text-3xl font-extrabold text-ink mb-2">{shot.title}</h1>
           <div className="flex items-center gap-3">
             <Link to={`/users/${shot.author.id}`}>
-              <img
-                src={shot.author.avatar || 'https://via.placeholder.com/50'}
-                alt={shot.author.username}
-                className="w-8 h-8 rounded-full object-cover border border-border"
+              <Avatar
+                src={shot.author.avatar}
+                username={shot.author.username}
+                className="w-8 h-8 border border-border"
               />
             </Link>
             <div>
@@ -120,7 +121,7 @@ export const ShotDetailPage = () => {
 
       {/* Головне зображення */}
       <div className="rounded-3xl overflow-hidden border border-border shadow-2xl bg-surface-alt mb-8">
-        <img src={shot.image} alt={shot.title} className="w-full max-h-[700px] object-contain mx-auto" />
+        <img src={shot.image} alt={shot.title} className="w-full max-h-175 object-contain mx-auto" />
       </div>
 
       {/* Опис та теги */}
@@ -165,10 +166,10 @@ export const ShotDetailPage = () => {
             <div className="flex flex-col gap-4">
               {commentsData?.results.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
-                  <img
-                    src={comment.author.avatar || 'https://via.placeholder.com/50'}
-                    alt={comment.author.username}
-                    className="w-8 h-8 rounded-full object-cover border border-border shrink-0"
+                  <Avatar
+                    src={comment.author.avatar}
+                    username={comment.author.username}
+                    className="w-8 h-8 border border-border"
                   />
                   <div className="bg-surface-alt rounded-2xl px-4 py-2.5 flex-1">
                     <div className="flex items-center gap-2">

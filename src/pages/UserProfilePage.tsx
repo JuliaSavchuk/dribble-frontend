@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
 import { ShotCard } from '../components/ui/ShotCard'
 import { Spinner } from '../components/ui/Spinner'
+import { Avatar } from '../components/ui/Avatar'
 
 export const UserProfilePage = () => {
   const { id } = useParams<{ id: string }>()
@@ -40,10 +41,11 @@ export const UserProfilePage = () => {
     <div className="max-w-5xl mx-auto px-4 py-12">
       {/* Шапка профілю */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10">
-        <img
-          src={profile.avatar || 'https://via.placeholder.com/150'}
-          alt={profile.username}
-          className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg"
+        <Avatar
+          src={profile.avatar}
+          username={profile.username}
+          className="w-28 h-28 border-4 border-white shadow-lg"
+          textClassName="text-4xl"
         />
 
         <div className="flex-1 text-center sm:text-left">

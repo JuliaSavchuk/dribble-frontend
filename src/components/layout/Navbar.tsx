@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { ChevronDown, Search, Globe } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { Button } from '../ui/Button'
+import { Avatar } from '../ui/Avatar'
 import logo from '../../assets/voxel-logo.png'
 
 const NAV_ITEMS = [
@@ -76,19 +77,7 @@ export const Navbar = () => {
               </Link>
               <Link to="/profile">
                 <div className="flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-surface-alt transition-colors">
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={user.username}
-                      className="w-9 h-9 rounded-full object-cover border border-border"
-                    />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                      <span className="text-xs font-bold text-primary">
-                        {user.username.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
+                  <Avatar src={user.avatar} username={user.username} className="w-9 h-9" textClassName="text-xs" />
                   <span className="hidden sm:block text-sm font-semibold text-ink">{user.username}</span>
                 </div>
               </Link>

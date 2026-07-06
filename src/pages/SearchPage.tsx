@@ -2,6 +2,7 @@ import { useSearchParams, Link } from 'react-router'
 import { useSearchQuery } from '../hooks/useSearch'
 import { ShotCard } from '../components/ui/ShotCard'
 import { Spinner } from '../components/ui/Spinner'
+import { Avatar } from '../components/ui/Avatar'
 
 export const SearchPage = () => {
   const [searchParams] = useSearchParams()
@@ -48,10 +49,11 @@ export const SearchPage = () => {
                     to={`/users/${u.id}`}
                     className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-white hover:border-ink transition-colors"
                   >
-                    <img
-                      src={u.avatar || 'https://via.placeholder.com/50'}
-                      alt={u.username}
-                      className="w-12 h-12 rounded-full object-cover border border-border shrink-0"
+                    <Avatar
+                      src={u.avatar}
+                      username={u.username}
+                      className="w-12 h-12 border border-border"
+                      textClassName="text-lg"
                     />
                     <div className="min-w-0">
                       <p className="font-semibold text-ink truncate">{u.username}</p>

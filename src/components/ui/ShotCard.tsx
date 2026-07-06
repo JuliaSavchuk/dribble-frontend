@@ -4,6 +4,7 @@ import type { Shot } from '../../types'
 import { useAuthStore } from '../../store/authStore'
 import { useLikeShotMutation, useSaveShotMutation } from '../../hooks/useShots'
 import { cn } from '../../utils/cn'
+import { Avatar } from './Avatar'
 
 interface ShotCardProps {
   shot: Shot
@@ -97,10 +98,10 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
       {/* Автор + лічильники — завжди видимі, під зображенням (як у макеті) */}
       <div className="flex items-center justify-between gap-3">
         <Link to={`/users/${shot.author.id}`} className="flex min-w-0 items-center gap-2.5">
-          <img
-            src={shot.author.avatar || undefined}
-            alt={shot.author.username}
-            className="aspect-square w-10 shrink-0 rounded-full border border-border bg-surface-alt object-cover"
+          <Avatar
+            src={shot.author.avatar}
+            username={shot.author.username}
+            className="w-10 h-10 border border-border"
           />
           <span className="min-w-0 truncate font-app text-base font-semibold text-ink">
             {shot.author.username}
