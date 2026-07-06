@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Heart, Bookmark } from 'lucide-react'
+import { Heart, MessageCircle, Bookmark } from 'lucide-react'
 import type { Shot } from '../../types'
 import { useAuthStore } from '../../store/authStore'
 import { useLikeShotMutation, useSaveShotMutation } from '../../hooks/useShots'
@@ -9,6 +9,24 @@ interface ShotCardProps {
   shot: Shot
 }
 
+// Кругла кнопка дії на hover-оверлеї (лайк / коментар / збереження) —
+// відповідає специфікації з Figma: коло 2.5rem (40px), біле тло, іконка 1.5rem (24px) по центру.
+const OverlayIconButton = ({
+  active,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) => (
+  <button
+    type="button"
+    className={cn(
+      'flex aspect-square w-10 shrink-0 items-center justify-center rounded-full bg-white transition-transform active:scale-90 disabled:cursor-not-allowed disabled:opacity-60',
+      active ? 'text-primary' : 'text-ink hover:text-primary',
+      className
+    )}
+    {...props}
+  />
+)
+
 export const ShotCard = ({ shot }: ShotCardProps) => {
   const isAuthed = useAuthStore((s) => !!s.accessToken)
   const likeMutation = useLikeShotMutation(shot.id)
@@ -16,78 +34,87 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (!isAuthed || likeMutation.isPending) return
     likeMutation.mutate()
   }
 
   const handleSave = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (!isAuthed || saveMutation.isPending) return
     saveMutation.mutate()
   }
 
   return (
-    <div className="group relative flex flex-col gap-2 bg-surface-alt border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
-      {/* Контейнер зображення та hover overlay */}
-      <div className="relative aspect-[4/3] bg-surface overflow-hidden">
+    <div className="group flex flex-col gap-3">
+      {/* Зображення + hover-оверлей (назва + дії) */}
+      <Link
+        to={`/shot/${shot.id}`}
+        className="relative block aspect-4/3 w-full overflow-hidden rounded-[1.875rem] bg-surface-alt"
+      >
         <img
           src={shot.preview || shot.image}
           alt={shot.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-          <div className="flex justify-between items-center text-white">
-            <Link to={`/shot/${shot.id}`} className="font-semibold truncate max-w-[70%] hover:underline">
-              {shot.title}
-            </Link>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                title="Лайк"
-                onClick={handleLike}
-                disabled={!isAuthed}
-                className={cn(
-                  'w-8 h-8 rounded-full bg-surface-alt/80 border border-border/50 flex items-center justify-center transition-all cursor-pointer disabled:cursor-not-allowed',
-                  shot.is_liked ? 'text-primary bg-white' : 'text-muted hover:text-primary hover:bg-white'
-                )}
-              >
-                <Heart className="w-4 h-4" fill={shot.is_liked ? 'currentColor' : 'none'} />
-              </button>
-              <button
-                type="button"
-                title="Зберегти"
-                onClick={handleSave}
-                disabled={!isAuthed}
-                className={cn(
-                  'w-8 h-8 rounded-full bg-surface-alt/80 border border-border/50 flex items-center justify-center transition-all cursor-pointer disabled:cursor-not-allowed',
-                  shot.is_saved ? 'text-white bg-white/30' : 'text-muted hover:text-white hover:bg-white/20'
-                )}
-              >
-                <Bookmark className="w-4 h-4" fill={shot.is_saved ? 'currentColor' : 'none'} />
-              </button>
-            </div>
+        <div className="absolute inset-0 flex items-end justify-between gap-3 bg-linear-to-t from-black/80 via-black/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="min-w-0 truncate font-app text-lg font-semibold text-white sm:text-xl">
+            {shot.title}
+          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <OverlayIconButton
+              title="Лайк"
+              onClick={handleLike}
+              disabled={!isAuthed || likeMutation.isPending}
+              active={shot.is_liked}
+            >
+              <Heart className="h-6 w-6" fill={shot.is_liked ? 'currentColor' : 'none'} />
+            </OverlayIconButton>
+            <OverlayIconButton
+              title="Коментарі"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+            >
+              <MessageCircle className="h-6 w-6" />
+            </OverlayIconButton>
+            <OverlayIconButton
+              title="Зберегти"
+              onClick={handleSave}
+              disabled={!isAuthed || saveMutation.isPending}
+              active={shot.is_saved}
+            >
+              <Bookmark className="h-6 w-6" fill={shot.is_saved ? 'currentColor' : 'none'} />
+            </OverlayIconButton>
           </div>
         </div>
-      </div>
+      </Link>
 
-      {/* Інформація про автора */}
-      <div className="flex justify-between items-center px-3 py-2 text-xs">
-        <Link to={`/shot/${shot.id}`} className="flex items-center gap-2 min-w-0">
+      {/* Автор + лічильники — завжди видимі, під зображенням (як у макеті) */}
+      <div className="flex items-center justify-between gap-3">
+        <Link to={`/users/${shot.author.id}`} className="flex min-w-0 items-center gap-2.5">
           <img
-            src={shot.author.avatar || 'https://via.placeholder.com/50'}
+            src={shot.author.avatar || undefined}
             alt={shot.author.username}
-            className="w-5 h-5 rounded-full object-cover border border-border shrink-0"
+            className="aspect-square w-10 shrink-0 rounded-full border border-border bg-surface-alt object-cover"
           />
-          <span className="font-medium text-white hover:text-primary transition-colors truncate max-w-[100px]">
+          <span className="min-w-0 truncate font-app text-base font-semibold text-ink">
             {shot.author.username}
           </span>
         </Link>
-        <div className="flex items-center gap-3 text-muted shrink-0">
+
+        <div className="flex shrink-0 items-center gap-3 text-sm font-semibold text-ink">
           <span className="flex items-center gap-1">
-            <Heart className="w-3.5 h-3.5" fill={shot.is_liked ? 'currentColor' : 'none'} />
+            <Heart className="h-3.5 w-3.5" fill={shot.is_liked ? 'currentColor' : 'none'} />
             {shot.likes_count}
+          </span>
+          <span className="flex items-center gap-1">
+            <MessageCircle className="h-3.5 w-3.5" />
+            {shot.comments_count}
           </span>
         </div>
       </div>

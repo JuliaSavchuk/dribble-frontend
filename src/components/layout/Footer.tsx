@@ -9,7 +9,7 @@ const COLUMN_2 = ['Freelancers', 'Designers']
 export const Footer = () => {
   return (
     <footer className="bg-surface-alt mt-auto">
-      <div className="max-w-[1760px] mx-auto px-6 sm:px-10 py-16">
+      <div className="max-w-[110rem] mx-auto px-6 sm:px-10 py-16">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
           {/* Логотип + навігація "For designers" */}
           <div className="flex flex-col gap-8">

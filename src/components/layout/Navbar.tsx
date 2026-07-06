@@ -29,7 +29,7 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border font-app">
-      <div className="max-w-[1760px] mx-auto px-6 sm:px-10 h-20 flex items-center gap-6">
+      <div className="max-w-[110rem] mx-auto px-6 sm:px-10 h-20 flex items-center gap-6">
         {/* Логотип */}
         <Link to="/" className="flex items-center gap-1.5 shrink-0">
           <img src={logo} alt="" className="h-9 w-9" draggable={false} />
