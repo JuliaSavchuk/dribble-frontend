@@ -1,142 +1,183 @@
-import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useState } from 'react'
+import { Link } from 'react-router'
 import { AuthBackground } from '../../components/auth/AuthBackground'
 import { AuthCard } from '../../components/auth/AuthCard'
 import { VoxelLogo } from '../../components/auth/VoxelLogo'
 import { AuthInput } from '../../components/auth/AuthInput'
 import { AuthButton } from '../../components/auth/AuthButton'
 import { GoogleButton } from '../../components/auth/GoogleButton'
+import { AuthDivider } from '../../components/auth/AuthDivider'
+import { OtpStep } from '../../components/auth/steps/OtpStep'
+import { NewPasswordStep } from '../../components/auth/steps/NewPasswordStep'
+import { ProfileStep } from '../../components/auth/steps/ProfileStep'
 import { Alert } from '../../components/ui/Alert'
-import { useRegister, useGoogleLogin } from '../../hooks/useAuth'
-import type { ApiError } from '../../types'
+import { useCompleteRegistration, useGoogleLogin } from '../../hooks/useAuth'
+import { getErrorMessage, getErrorField } from '../../utils/errors'
 
-function getErrorMessage(error: unknown): string {
-  const err = error as { response?: { data?: ApiError } }
-  const data = err?.response?.data
-  if (!data) return 'Сталася помилка. Спробуйте ще раз.'
-  if (data.detail) return data.detail
-  const firstKey = Object.keys(data)[0]
-  if (firstKey) {
-    const val = data[firstKey]
-    return Array.isArray(val) ? val[0] : (val ?? 'Помилка')
-  }
-  return 'Помилка реєстрації.'
-}
+type Step = 'email' | 'otp' | 'password' | 'profile'
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const RegisterPage = () => {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [password2, setPassword2] = useState('')
+  const [step, setStep] = useState<Step>('email')
+  const [emailError, setEmailError] = useState<string | null>(null)
 
-  const registerMutation = useRegister()
+  // Wizard state
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [location, setLocation] = useState('')
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+
+  const completeRegistration = useCompleteRegistration()
   const googleMutation = useGoogleLogin()
 
-  const isFilled = email.length > 0 && username.length > 0 && password.length > 0 && password2.length > 0
-
-  const handleSubmit = (e: FormEvent) => {
+  // ─── Крок 1: Email ──────────────────────────────────────────────────────
+  const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!isFilled) return
-    registerMutation.mutate({ email, username, password, password2 })
+    if (!EMAIL_RE.test(email)) {
+      setEmailError('Введіть коректну email адресу.')
+      return
+    }
+    setEmailError(null)
+    setStep('otp')
   }
 
   const handleGoogle = () => {
-    // У виробничому середовищі: отримати Google ID token через Google SDK
     googleMutation.mutate('mock-google-id-token')
   }
 
-  const errorMsg = registerMutation.isError
-    ? getErrorMessage(registerMutation.error)
-    : googleMutation.isError
-      ? getErrorMessage(googleMutation.error)
-      : null
+  // ─── Крок 4: фінальна відправка ────────────────────────────────────────
+  const handleProfileSubmit = () => {
+    completeRegistration.mutate(
+      {
+        email,
+        username: fullName.trim(),
+        password,
+        password2: confirmPassword,
+        avatar: avatarFile,
+        location: location.trim() || undefined,
+      },
+      {
+        onError: (err) => {
+          const field = getErrorField(err)
+          if (field === 'email') setStep('email')
+          else if (field === 'password' || field === 'password2') setStep('password')
+          // 'username' (full name) і решта помилок лишаються на кроці profile
+        },
+      }
+    )
+  }
 
-  return (
-    <AuthBackground>
-      <AuthCard onBack={() => navigate('/login')}>
-        <div className="flex flex-col items-center">
-          <VoxelLogo className="mb-5" />
-          <h1 className="text-xl font-bold text-voxel-black">Welcome to Voxel</h1>
-          <p className="mt-2 text-center text-sm text-voxel-gray-dark">
-            Create your account and discover world-class design talent.
-          </p>
-        </div>
+  const registrationError = completeRegistration.isError ? getErrorMessage(completeRegistration.error) : null
+  const googleError = googleMutation.isError ? getErrorMessage(googleMutation.error) : null
 
-        <div>
-          {errorMsg && <Alert type="error" message={errorMsg} className="mb-4" />}
+  // ─── Крок: Email ────────────────────────────────────────────────────────
+  if (step === 'email') {
+    return (
+      <AuthBackground>
+        <AuthCard>
+          <div className="flex flex-col items-center">
+            <VoxelLogo className="mb-5" />
+            <h1 className="text-xl font-bold text-voxel-black">Welcome to Voxel</h1>
+            <p className="mt-2 text-center text-sm text-voxel-gray-dark">
+              Create your account and discover world-class design talent.
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <AuthInput
-              type="email"
-              placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              name="email"
-              required
-            />
+          <div>
+            {(emailError || googleError) && (
+              <Alert type="error" message={emailError ?? googleError ?? ''} className="mb-4" />
+            )}
 
-            <AuthInput
-              type="text"
-              placeholder="Choose a username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="new-username"
-              name="username"
-              id="username"
-              required
-            />
+            <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
+              <AuthInput
+                type="email"
+                placeholder="Enter email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+              <AuthButton active={email.length > 0}>Continue</AuthButton>
+            </form>
 
-            <AuthInput
-              type="password"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
-
-            <AuthInput
-              type="password"
-              placeholder="Confirm password"
-              value={password2}
-              onChange={(e) => setPassword2(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
-
-            <AuthButton
-              active={isFilled}
-              isLoading={registerMutation.isPending}
-            >
-              Create account
-            </AuthButton>
-
-            <div className="flex items-center gap-3 text-xs text-voxel-gray">
-              <div className="h-px flex-1 bg-black/10" />
-              <span>or</span>
-              <div className="h-px flex-1 bg-black/10" />
-            </div>
+            <AuthDivider className="my-4" />
 
             <GoogleButton
-              label="Sign up with Google"
+              label="Login with Google account"
               onClick={handleGoogle}
               disabled={googleMutation.isPending}
             />
-          </form>
 
-          <p className="mt-6 text-center text-xs text-voxel-gray-dark">
-            By continuing, you agree to our Terms and Privacy Policy.
-          </p>
-          <p className="mt-2 text-center text-sm text-voxel-black">
-            Already have an account?{' '}
-            <Link to="/login" className="font-semibold underline">
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </AuthCard>
+            <p className="mt-6 text-center text-xs text-voxel-gray-dark">
+              By continuing, you agree to our Terms and Privacy Policy.
+            </p>
+            <p className="mt-2 text-center text-sm text-voxel-black">
+              Already have an account?{' '}
+              <Link to="/login" className="font-semibold underline">
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </AuthCard>
+      </AuthBackground>
+    )
+  }
+
+  // ─── Крок: OTP підтвердження ────────────────────────────────────────────
+  if (step === 'otp') {
+    return (
+      <AuthBackground>
+        <OtpStep
+          email={email}
+          onBack={() => setStep('email')}
+          onSubmit={() => setStep('password')}
+          onUsePassword={() => setStep('password')}
+        />
+      </AuthBackground>
+    )
+  }
+
+  // ─── Крок: Створення пароля ─────────────────────────────────────────────
+  if (step === 'password') {
+    return (
+      <AuthBackground>
+        <NewPasswordStep
+          title="Create your password"
+          password={password}
+          onPasswordChange={setPassword}
+          confirmPassword={confirmPassword}
+          onConfirmChange={setConfirmPassword}
+          confirmPlaceholder="Confirm your password"
+          submitLabel="Continue"
+          onBack={() => setStep('otp')}
+          onSubmit={() => setStep('profile')}
+        />
+      </AuthBackground>
+    )
+  }
+
+  // ─── Крок: Профіль ──────────────────────────────────────────────────────
+  return (
+    <AuthBackground>
+      <ProfileStep
+        fullName={fullName}
+        onFullNameChange={setFullName}
+        location={location}
+        onLocationChange={setLocation}
+        avatarPreview={avatarPreview}
+        onAvatarChange={(file) => {
+          setAvatarFile(file)
+          setAvatarPreview(URL.createObjectURL(file))
+        }}
+        onBack={() => setStep('password')}
+        onSubmit={handleProfileSubmit}
+        isLoading={completeRegistration.isPending}
+        error={registrationError}
+      />
     </AuthBackground>
   )
 }

@@ -11,10 +11,10 @@ export const Alert = ({ type, message, className }: AlertProps) => {
     <div
       role="alert"
       className={cn(
-        'p-4 text-sm rounded-2xl border',
-        type === 'error' && 'bg-red-950/30 border-red-500/40 text-red-400',
-        type === 'success' && 'bg-green-950/30 border-green-500/40 text-green-400',
-        type === 'info' && 'bg-blue-950/30 border-blue-500/40 text-blue-400',
+        'p-4 text-sm rounded-2xl border font-app',
+        type === 'error' && 'bg-red-50 border-red-200 text-red-600',
+        type === 'success' && 'bg-green-50 border-green-200 text-green-700',
+        type === 'info' && 'bg-blue-50 border-blue-200 text-blue-700',
         className
       )}
     >

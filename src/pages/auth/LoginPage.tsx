@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { useLogin, useGoogleLogin } from '../../hooks/useAuth'
 import { AuthBackground } from '../../components/auth/AuthBackground'
 import { AuthCard } from '../../components/auth/AuthCard'
@@ -7,24 +7,11 @@ import { VoxelLogo } from '../../components/auth/VoxelLogo'
 import { AuthInput } from '../../components/auth/AuthInput'
 import { AuthButton } from '../../components/auth/AuthButton'
 import { GoogleButton } from '../../components/auth/GoogleButton'
+import { AuthDivider } from '../../components/auth/AuthDivider'
 import { Alert } from '../../components/ui/Alert'
-import type { ApiError } from '../../types'
-
-function getErrorMessage(error: unknown): string {
-  const err = error as { response?: { data?: ApiError } }
-  const data = err?.response?.data
-  if (!data) return 'Сталася помилка. Спробуйте ще раз.'
-  if (data.detail) return data.detail
-  const firstKey = Object.keys(data)[0]
-  if (firstKey) {
-    const val = data[firstKey]
-    return Array.isArray(val) ? val[0] : (val ?? 'Помилка')
-  }
-  return 'Невірна пошта або пароль.'
-}
+import { getErrorMessage } from '../../utils/errors'
 
 export const LoginPage = () => {
-  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -38,6 +25,7 @@ export const LoginPage = () => {
   }
 
   const handleGoogle = () => {
+    // У продакшені: отримати Google ID token через Google SDK
     googleMutation.mutate('mock-google-id-token')
   }
 
@@ -50,7 +38,8 @@ export const LoginPage = () => {
 
   return (
     <AuthBackground>
-      <AuthCard onBack={() => navigate('/register')}>
+      {/* На скріні "Welcome back" немає стрілки назад — це вхідний екран флоу */}
+      <AuthCard>
         <div className="flex flex-col items-center">
           <VoxelLogo className="mb-5" />
           <h1 className="text-xl font-bold text-voxel-black">Welcome back</h1>
@@ -61,11 +50,7 @@ export const LoginPage = () => {
 
           <GoogleButton label="Login with Google account" onClick={handleGoogle} disabled={isLoading} />
 
-          <div className="my-4 flex items-center gap-3 text-xs text-voxel-gray">
-            <div className="h-px flex-1 bg-black/10" />
-            <span>or</span>
-            <div className="h-px flex-1 bg-black/10" />
-          </div>
+          <AuthDivider className="my-4" />
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <AuthInput
@@ -77,15 +62,23 @@ export const LoginPage = () => {
               disabled={isLoading}
               required
             />
-            <AuthInput
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              disabled={isLoading}
-              required
-            />
+            <div className="flex flex-col gap-1.5">
+              <AuthInput
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                disabled={isLoading}
+                required
+              />
+              <Link
+                to="/recovery"
+                className="self-end text-xs font-medium text-voxel-gray-dark underline-offset-2 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             <AuthButton active={email.length > 0 && password.length > 0} isLoading={loginMutation.isPending}>
               Continue

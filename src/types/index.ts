@@ -56,6 +56,23 @@ export interface GoogleLoginResponse {
   created: boolean
 }
 
+// Відновлення пароля
+// Ці ендпоінти ще не описані в Фазі 0 API контракту і не реалізовані на
+// бекенді. Інтерфейси та клієнтські виклики підготовлені наперед, щоб
+// підключення відбулося без змін на фронтенді, щойно бекенд їх додасть.
+// Поки що UI обробляє відсутність цих ендпоінтів коректно (повідомлення
+// "функція ще не підтримується сервером").
+
+export interface PasswordResetRequest {
+  email: string
+}
+
+export interface PasswordResetConfirmRequest {
+  email: string
+  password: string
+  password2: string
+}
+
 //Shots
 
 export interface ShotAuthor {
@@ -86,6 +103,40 @@ export interface Comment {
   text: string
   author: ShotAuthor
   created_at: string
+}
+
+//Публічний профіль користувача (GET /api/users/:id/)
+
+export interface PublicProfile {
+  id: number
+  username: string
+  avatar: string | null
+  bio: string
+  website: string
+  shots_count: number
+  followers_count: number
+  following_count: number
+  is_following: boolean
+}
+
+//Search API (GET /api/search/)
+
+export interface SearchUserResult {
+  id: number
+  username: string
+  avatar: string | null
+  bio: string
+}
+
+export interface SearchResponse {
+  shots: {
+    count: number
+    results: Shot[]
+  }
+  users: {
+    count: number
+    results: SearchUserResult[]
+  }
 }
 
 //Pagination

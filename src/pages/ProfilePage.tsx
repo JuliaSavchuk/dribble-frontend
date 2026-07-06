@@ -10,8 +10,8 @@ import { Spinner } from '../components/ui/Spinner'
 //Stat Card
 const StatCard = ({ value, label }: { value: number; label: string }) => (
   <div className="flex flex-col items-center gap-0.5">
-    <span className="text-2xl font-extrabold text-white">{value}</span>
-    <span className="text-xs text-[#8E8EA0] uppercase tracking-wider font-medium">{label}</span>
+    <span className="text-2xl font-extrabold text-ink">{value}</span>
+    <span className="text-xs text-muted uppercase tracking-wider font-medium">{label}</span>
   </div>
 )
 
@@ -32,18 +32,18 @@ const SocialInput = ({
   disabled: boolean
 }) => (
   <div className="flex flex-col gap-1.5">
-    <label className="text-xs font-semibold text-[#8E8EA0] tracking-wider uppercase">
+    <label className="text-xs font-semibold text-muted tracking-wider uppercase">
       {label}
     </label>
     <div className="relative flex items-center">
-      <div className="absolute left-4 text-[#8E8EA0] pointer-events-none">{icon}</div>
+      <div className="absolute left-4 text-muted pointer-events-none">{icon}</div>
       <input
         type="url"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-2xl bg-[#16162a] border border-[#27273F] pl-10 pr-4 py-3 text-sm text-white placeholder:text-[#8E8EA0]/50 focus:outline-none focus:border-[#EA4C89] focus:ring-1 focus:ring-[#EA4C89]/50 transition-all duration-200 disabled:opacity-50"
+        className="w-full rounded-2xl bg-white border border-border pl-10 pr-4 py-3 text-sm text-ink placeholder:text-muted/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all duration-200 disabled:opacity-50"
       />
     </div>
   </div>
@@ -150,9 +150,9 @@ export const ProfilePage = () => {
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
       {/* Profile header */}
-      <div className="bg-[#16162a] border border-[#27273F] rounded-3xl overflow-hidden shadow-2xl shadow-black/40 mb-6">
+      <div className="bg-white border border-border rounded-3xl overflow-hidden shadow-2xl shadow-black/5 mb-6">
         {/* Banner */}
-        <div className="h-28 bg-linear-to-br from-[#EA4C89]/30 via-[#27273F] to-[#16162a]" />
+        <div className="h-28 bg-linear-to-br from-primary/10 via-surface-alt to-white" />
 
         {/* Avatar + meta */}
         <div className="px-8 pb-6">
@@ -162,11 +162,11 @@ export const ProfilePage = () => {
                 <img
                   src={avatarPreview}
                   alt={profile?.username}
-                  className="w-24 h-24 rounded-2xl object-cover border-4 border-[#16162a] shadow-lg"
+                  className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-2xl bg-[#EA4C89]/20 border-4 border-[#16162a] flex items-center justify-center">
-                  <span className="text-3xl font-extrabold text-[#EA4C89]">
+                <div className="w-24 h-24 rounded-2xl bg-primary/10 border-4 border-white flex items-center justify-center">
+                  <span className="text-3xl font-extrabold text-primary">
                     {profile?.username?.charAt(0).toUpperCase() ?? '?'}
                   </span>
                 </div>
@@ -178,7 +178,7 @@ export const ProfilePage = () => {
                 className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
                 aria-label="Змінити фото профілю"
               >
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-6 h-6 text-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -198,26 +198,26 @@ export const ProfilePage = () => {
           </div>
 
           <div>
-            <h1 className="text-2xl font-extrabold text-white">
+            <h1 className="text-2xl font-extrabold text-ink">
               {profile?.username}
             </h1>
-            <p className="text-sm text-[#8E8EA0]">{profile?.email}</p>
+            <p className="text-sm text-muted">{profile?.email}</p>
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-8 mt-5 pt-5 border-t border-[#27273F]">
+          <div className="flex items-center gap-8 mt-5 pt-5 border-t border-border">
             <StatCard value={profile?.shots_count ?? 0} label="Робіт" />
-            <div className="w-px h-8 bg-[#27273F]" />
+            <div className="w-px h-8 bg-surface-alt" />
             <StatCard value={profile?.followers_count ?? 0} label="Підписники" />
-            <div className="w-px h-8 bg-[#27273F]" />
+            <div className="w-px h-8 bg-surface-alt" />
             <StatCard value={profile?.following_count ?? 0} label="Підписки" />
           </div>
         </div>
       </div>
 
       {/* Edit form */}
-      <div className="bg-[#16162a] border border-[#27273F] rounded-3xl p-8 shadow-2xl shadow-black/40">
-        <h2 className="text-lg font-bold text-white mb-6">Редагувати профіль</h2>
+      <div className="bg-white border border-border rounded-3xl p-8 shadow-2xl shadow-black/5">
+        <h2 className="text-lg font-bold text-ink mb-6">Редагувати профіль</h2>
 
         {successMsg && (
           <Alert type="success" message={successMsg} className="mb-6" />
@@ -251,7 +251,7 @@ export const ProfilePage = () => {
 
           {/* Bio */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#8E8EA0] tracking-wider uppercase">
+            <label className="text-xs font-semibold text-muted tracking-wider uppercase">
               Про себе
             </label>
             <textarea
@@ -261,14 +261,14 @@ export const ProfilePage = () => {
               disabled={updateMutation.isPending}
               rows={3}
               placeholder="Розкажіть про свої проєкти та досвід..."
-              className="w-full rounded-2xl bg-[#0F0F1A] border border-[#27273F] px-4 py-3 text-sm text-white placeholder:text-[#8E8EA0]/50 focus:outline-none focus:border-[#EA4C89] focus:ring-1 focus:ring-[#EA4C89]/50 transition-all duration-200 resize-none disabled:opacity-50"
+              className="w-full rounded-2xl bg-surface-alt border border-border px-4 py-3 text-sm text-ink placeholder:text-muted/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all duration-200 resize-none disabled:opacity-50"
             />
-            <span className="text-xs text-[#8E8EA0]/60 text-right">{bio.length}/500</span>
+            <span className="text-xs text-muted/60 text-right">{bio.length}/500</span>
           </div>
 
           {/* Social links */}
           <div className="flex flex-col gap-4">
-            <span className="text-xs font-semibold text-[#8E8EA0] tracking-wider uppercase">
+            <span className="text-xs font-semibold text-muted tracking-wider uppercase">
               Соціальні мережі
             </span>
             <SocialInput
@@ -306,25 +306,25 @@ export const ProfilePage = () => {
           </div>
 
           {/* Avatar upload button */}
-          <div className="flex items-center gap-4 p-4 bg-[#0F0F1A] rounded-2xl border border-[#27273F]">
+          <div className="flex items-center gap-4 p-4 bg-surface-alt rounded-2xl border border-border">
             {avatarPreview ? (
               <img
                 src={avatarPreview}
                 alt="Preview"
-                className="w-12 h-12 rounded-xl object-cover border border-[#27273F]"
+                className="w-12 h-12 rounded-xl object-cover border border-border"
               />
             ) : (
-              <div className="w-12 h-12 rounded-xl bg-[#27273F] flex items-center justify-center">
-                <svg className="w-5 h-5 text-[#8E8EA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="w-12 h-12 rounded-xl bg-surface-alt flex items-center justify-center">
+                <svg className="w-5 h-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
               </div>
             )}
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-ink">
                 {avatarFile ? avatarFile.name : 'Фото профілю'}
               </p>
-              <p className="text-xs text-[#8E8EA0]">
+              <p className="text-xs text-muted">
                 {avatarFile
                   ? `${(avatarFile.size / 1024).toFixed(0)} KB`
                   : 'PNG, JPG, WEBP до 5 MB'}

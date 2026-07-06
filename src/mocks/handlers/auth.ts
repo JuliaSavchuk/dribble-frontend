@@ -202,4 +202,22 @@ export const authHandlers = [
 
     return HttpResponse.json(mockUser, { status: 200 })
   }),
+
+  // ─── Password recovery (не в контракті Фази 0) ────────────────────────
+  // Повертає 501, щоб фронтенд показував коректне повідомлення «ще не
+  // підтримується сервером» замість мережевої помилки.
+  // Замінити на реальні хендлери, коли бекенд реалізує ендпоінти.
+  http.post(`${BASE_URL}/auth/password-reset/`, () => {
+    return HttpResponse.json(
+      { detail: 'Функція відновлення пароля ще не реалізована на сервері.' },
+      { status: 501 }
+    )
+  }),
+
+  http.post(`${BASE_URL}/auth/password-reset/confirm/`, () => {
+    return HttpResponse.json(
+      { detail: 'Функція підтвердження нового пароля ще не реалізована на сервері.' },
+      { status: 501 }
+    )
+  }),
 ]

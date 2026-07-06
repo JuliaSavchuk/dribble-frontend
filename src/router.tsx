@@ -1,15 +1,6 @@
-import { createBrowserRouter, redirect, Navigate, Outlet } from 'react-router'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router'
 import { Layout } from './components/layout/Layout'
 import { useAuthStore } from './store/authStore'
-
-// ─── Route guards ─────────────────────────────────────────────────────────────
-//
-// Проблема з loader(): React Router викликає loader() синхронно, ще до того як
-// Zustand встигає відновити стан з localStorage (persist middleware асинхронний).
-// При першому рендері useAuthStore.getState().accessToken завжди null →
-// автентифікований юзер безпідставно редиректиться на /login.
-//
-// Рішення: перевірка стану у компонентах, де Zustand вже гідрований.
 
 // Захищений маршрут — редиректить на /login якщо немає токена
 const ProtectedRoute = () => {
@@ -28,19 +19,40 @@ const GuestRoute = () => {
 // ─── Router ───────────────────────────────────────────────────────────────────
 
 export const router = createBrowserRouter([
-  // Root redirect
+  // Публічна головна сторінка — перша точка входу для будь-якого відвідувача.
+  // Доступна і гостям, і автентифікованим юзерам (Navbar сам показує
+  // потрібний стан — "Вхід/Реєстрація" або аватар користувача).
   {
-    path: '/',
-    loader: () => {
-      // Тут loader безпечний: ми лише читаємо синхронний стан для першого
-      // переходу. Якщо store ще не гідрований — юзер потрапить на /login,
-      // де GuestRoute перевірить стан повторно після гідрації.
-      const token = useAuthStore.getState().accessToken
-      throw redirect(token ? '/profile' : '/login')
-    },
+    Component: Layout,
+    children: [
+      {
+        path: '/',
+        lazy: () => import('./pages/HomePage').then((m) => ({ Component: m.HomePage })),
+      },
+      // Стрічка робіт — публічна (GET /api/shots/ доступний і гостям)
+      {
+        path: '/feed',
+        lazy: () => import('./pages/FeedPage').then((m) => ({ Component: m.FeedPage })),
+      },
+      // Детальна сторінка Shot — публічна
+      {
+        path: '/shot/:id',
+        lazy: () => import('./pages/ShotDetailPage').then((m) => ({ Component: m.ShotDetailPage })),
+      },
+      // Публічний профіль користувача (Фаза 0, Social API)
+      {
+        path: '/users/:id',
+        lazy: () => import('./pages/UserProfilePage').then((m) => ({ Component: m.UserProfilePage })),
+      },
+      // Глобальний пошук (Фаза 0, Search API)
+      {
+        path: '/search',
+        lazy: () => import('./pages/SearchPage').then((m) => ({ Component: m.SearchPage })),
+      },
+    ],
   },
 
-  // Guest-only routes
+  // Guest-only routes — якщо юзер вже залогінений, його перекине на /profile
   {
     Component: GuestRoute,
     children: [
@@ -51,6 +63,10 @@ export const router = createBrowserRouter([
       {
         path: '/register',
         lazy: () => import('./pages/auth/RegisterPage').then((m) => ({ Component: m.RegisterPage })),
+      },
+      {
+        path: '/recovery',
+        lazy: () => import('./pages/auth/RecoveryPage').then((m) => ({ Component: m.RecoveryPage })),
       },
     ],
   },
@@ -66,6 +82,11 @@ export const router = createBrowserRouter([
             path: '/profile',
             lazy: () =>
               import('./pages/ProfilePage').then((m) => ({ Component: m.ProfilePage })),
+          },
+          // Публікація Shot — потребує авторизації (POST /api/shots/, Фаза 0)
+          {
+            path: '/upload',
+            lazy: () => import('./pages/UploadPage').then((m) => ({ Component: m.UploadPage })),
           },
         ],
       },

@@ -73,4 +73,12 @@ export const authApi = {
 
   updateProfile: (data: FormData | Record<string, unknown>) =>
     api.patch('/auth/profile/', data),
+
+  //Не описані в Фазі 0 контракту — підготовлені наперед під майбутній
+  // бекенд-ендпоінт відновлення пароля. Якщо ендпоінт відсутній, запит
+  requestPasswordReset: (email: string) =>
+    api.post('/auth/password-reset/', { email }),
+
+  confirmPasswordReset: (data: { email: string; password: string; password2: string }) =>
+    api.post('/auth/password-reset/confirm/', data),
 }

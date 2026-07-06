@@ -28,25 +28,81 @@ export const useLogin = () => {
   })
 }
 
-// useRegister
-// Sends a single POST /api/auth/register/ request with all required fields.
-// On success, redirects to /login so the user can sign in with their new credentials.
+// useCompleteRegistration
+// Викликається в кінці майстра реєстрації (після кроків email → otp → password → profile).
+// Бекенд не повертає токени з /auth/register/, тож одразу після створення
+// акаунта виконується логін, а за наявності аватара/локації — PATCH профілю.
 
-export const useRegister = () => {
+export const useCompleteRegistration = () => {
+  const setAuth = useAuthStore((state) => state.setAuth)
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: async (data: {
+    mutationFn: async (payload: {
       email: string
       username: string
       password: string
       password2: string
+      avatar?: File | null
+      location?: string
     }) => {
-      const { data: result } = await authApi.register(data)
-      return result
+      await authApi.register({
+        email: payload.email,
+        username: payload.username,
+        password: payload.password,
+        password2: payload.password2,
+      })
+
+      const { data: tokens } = await authApi.login({
+        email: payload.email,
+        password: payload.password,
+      })
+
+      let { data: profile } = await api.get('/auth/profile/', {
+        headers: { Authorization: `Bearer ${tokens.access}` },
+      })
+
+      // "Tell us about yourself": бекенд поки не має окремих полів
+      // full name / location, тому location зберігається в bio,
+      // а аватар надсилається multipart-ом окремим запитом.
+      if (payload.avatar || payload.location) {
+        const formData = new FormData()
+        if (payload.avatar) formData.append('avatar', payload.avatar)
+        if (payload.location) formData.append('bio', payload.location)
+
+        const { data: updated } = await api.patch('/auth/profile/', formData, {
+          headers: { Authorization: `Bearer ${tokens.access}` },
+        })
+        profile = updated
+      }
+
+      return { tokens, profile }
     },
-    onSuccess: () => {
-      navigate('/login')
+    onSuccess: ({ tokens, profile }) => {
+      setAuth(profile as User, tokens.access, tokens.refresh)
+      navigate('/profile')
+    },
+  })
+}
+
+// usePasswordResetRequest / usePasswordResetConfirm
+// ⚠️ Бекенд-ендпоінти ще не описані в контракті Фази 0. Хуки готові до
+// підключення; до того часу помилка обробляється в RecoveryPage.
+
+export const usePasswordResetRequest = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const { data } = await authApi.requestPasswordReset(email)
+      return data
+    },
+  })
+}
+
+export const usePasswordResetConfirm = () => {
+  return useMutation({
+    mutationFn: async (payload: { email: string; password: string; password2: string }) => {
+      const { data } = await authApi.confirmPasswordReset(payload)
+      return data
     },
   })
 }

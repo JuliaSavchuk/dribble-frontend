@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Allkin&family=Host+Grotesk:wght@400;500;600;700&family=Kaushan+Script&family=Kings&family=La+Belle+Aurore&family=Lumanosimo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allkin&family=Host+Grotesk:wght@400;500;600;700&family=Josefin+Sans:wght@400;500;600;700&family=Kaushan+Script&family=Kings&family=La+Belle+Aurore&family=Lumanosimo&display=swap');
 
 @import "tailwindcss";
 
@@ -16,8 +16,18 @@
   --color-voxel-apricot: #FFC973;
   --color-voxel-white: #FFFFFF;
 
+  /* Кольори теми додатку (Feed/Shots/Navbar) — світла тема згідно з макетом Figma */
+  --color-primary: #EC5D5F;
+  --color-primary-dark: #D6484A;
+  --color-ink: #1B1831;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F5F5F5;
+  --color-muted: #A4A4A4;
+  --color-border: #E5E5E5;
+
   --font-script: 'Kaushan Script', cursive;
   --font-display: 'Host Grotesk', sans-serif;
+  --font-app: 'Josefin Sans', sans-serif;
   --font-kings: 'Kings', serif;
   --font-belle: 'La Belle Aurore', cursive;
   --font-lumanosimo: 'Lumanosimo', cursive;
@@ -26,9 +36,9 @@
 
 @layer base {
   body {
-    background-color: var(--color-voxel-black);
-    color: var(--color-voxel-black);
-    font-family: var(--font-display);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-app);
     -webkit-font-smoothing: antialiased;
   }
 }

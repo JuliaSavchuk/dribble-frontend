@@ -1,87 +1,95 @@
+import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
+import { ChevronDown, Search, Globe } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { Button } from '../ui/Button'
+import logo from '../../assets/voxel-logo.png'
 
-//Dribbble-style logo SVG
-const DribbbleLogo = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="w-8 h-8"
-  >
-    <circle cx="12" cy="12" r="10" fill="#EA4C89" />
-    <path
-      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
-      fill="#EA4C89"
-    />
-    <path
-      d="M12 2a10 10 0 0 1 6.56 2.44c-1.07 1.56-2.49 2.98-4.21 4.16A19.47 19.47 0 0 0 12 4.03 10.05 10.05 0 0 1 12 2z"
-      fill="#C73872"
-      opacity="0.6"
-    />
-    <ellipse cx="12" cy="12" rx="10" ry="10" stroke="#fff" strokeWidth="0" />
-    <path
-      d="M7 7.5C8.5 9 10 10 12 10.5c1.5.4 3.2.4 5.5-.2A9.97 9.97 0 0 0 12 2C9.9 2 8 2.7 6.5 3.9 6.8 5 7 6.2 7 7.5z"
-      fill="rgba(255,255,255,0.18)"
-    />
-    <path
-      d="M11.5 13.5c-1.6-.5-3.3-1.4-4.9-2.8A9.94 9.94 0 0 0 2.02 12.5C2.3 16.4 4.8 19.7 8.2 21.2c.3-2.5 1.5-5.3 3.3-7.7z"
-      fill="rgba(255,255,255,0.18)"
-    />
-    <path
-      d="M13 14.2c1.6.4 3.3.4 5.2-.1.5-1.7.7-3.4.5-5.1-2.1.6-3.9.6-5.5.2-.1.9-.1 1.8-.1 2.7 0 .8 0 1.6-.1 2.3z"
-      fill="rgba(255,255,255,0.18)"
-    />
-  </svg>
-)
+const NAV_ITEMS = [
+  { label: 'Categories', to: '/feed' },
+  { label: 'Community', to: '/feed' },
+  { label: 'Find a job', to: '/feed' },
+]
 
 export const Navbar = () => {
-  const user = useAuthStore((state) => state.user)
-  const logout = useAuthStore((state) => state.logout)
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
   const navigate = useNavigate()
+  const [search, setSearch] = useState('')
 
   const handleLogout = () => {
     logout()
-    navigate('/login')
+    navigate('/')
+  }
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault()
+    if (search.trim()) navigate(`/search?q=${encodeURIComponent(search.trim())}`)
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#27273F] bg-[#0F0F1A]/95 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link
-          to={user ? '/profile' : '/login'}
-          className="flex items-center gap-2.5 group"
-        >
-          <DribbbleLogo />
-          <span className="font-extrabold text-lg text-white tracking-tight group-hover:text-[#EA4C89] transition-colors duration-200">
-            Dribbble
-          </span>
+    <header className="sticky top-0 z-50 bg-white border-b border-border font-app">
+      <div className="max-w-[1760px] mx-auto px-6 sm:px-10 h-20 flex items-center gap-6">
+        {/* Логотип */}
+        <Link to="/" className="flex items-center gap-1.5 shrink-0">
+          <img src={logo} alt="" className="h-9 w-9" draggable={false} />
+          <span className="font-script text-2xl text-ink -mt-1">Voxel</span>
         </Link>
 
-        {/* Nav actions */}
-        <div className="flex items-center gap-3">
+        {/* Категорії / спільнота / робота */}
+        <nav className="hidden lg:flex items-center gap-1 shrink-0">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.label}
+              to={item.to}
+              className="flex items-center gap-1 px-3 py-2 rounded-full text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
+            >
+              {item.label}
+              <ChevronDown className="w-3.5 h-3.5" />
+            </Link>
+          ))}
+        </nav>
+
+        {/* Пошук */}
+        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md">
+          <div className="relative w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink" />
+            <input
+              type="text"
+              placeholder="Find a style"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-full border-2 border-ink bg-white pl-11 pr-4 py-2.5 text-sm text-ink placeholder:text-[#3E3E3E] focus:outline-none"
+            />
+          </div>
+        </form>
+
+        {/* Дії справа */}
+        <div className="flex items-center gap-3 ml-auto shrink-0">
           {user ? (
             <>
+              <Link
+                to="/upload"
+                className="hidden sm:block px-3 py-1.5 rounded-full text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
+              >
+                Опублікувати
+              </Link>
               <Link to="/profile">
-                <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full hover:bg-[#16162a] transition-colors duration-200">
+                <div className="flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-surface-alt transition-colors">
                   {user.avatar ? (
                     <img
                       src={user.avatar}
                       alt={user.username}
-                      className="w-8 h-8 rounded-full object-cover border-2 border-[#27273F] hover:border-[#EA4C89] transition-colors"
+                      className="w-9 h-9 rounded-full object-cover border border-border"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#EA4C89]/20 border-2 border-[#EA4C89]/30 flex items-center justify-center">
-                      <span className="text-xs font-bold text-[#EA4C89]">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                      <span className="text-xs font-bold text-primary">
                         {user.username.charAt(0).toUpperCase()}
                       </span>
                     </div>
                   )}
-                  <span className="text-sm font-medium text-white hidden sm:block">
-                    {user.username}
-                  </span>
+                  <span className="hidden sm:block text-sm font-semibold text-ink">{user.username}</span>
                 </div>
               </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -90,16 +98,22 @@ export const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  Вхід
-                </Button>
+              <Link to="/login" className="text-sm font-semibold text-ink hover:text-primary transition-colors px-2">
+                Log in
               </Link>
               <Link to="/register">
-                <Button size="sm">Реєстрація</Button>
+                <Button size="sm">Sign up</Button>
               </Link>
             </>
           )}
+
+          <button
+            type="button"
+            aria-label="Мова"
+            className="hidden sm:flex w-9 h-9 rounded-full items-center justify-center text-ink hover:bg-surface-alt transition-colors"
+          >
+            <Globe className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </header>
