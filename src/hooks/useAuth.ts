@@ -172,6 +172,12 @@ export const useUpdateProfile = () => {
     onSuccess: (data) => {
       updateUser(data)
       queryClient.setQueryData(['profile'], data)
+      // Публічний профіль (GET /users/:username/, який відкривається з
+      // навбару)
+      queryClient.invalidateQueries({ queryKey: ['user', data.username] })
+      queryClient.invalidateQueries({ queryKey: ['feed'] })
+      queryClient.invalidateQueries({ queryKey: ['shot'] })
+      queryClient.invalidateQueries({ queryKey: ['likedShots'] })
     },
   })
 }

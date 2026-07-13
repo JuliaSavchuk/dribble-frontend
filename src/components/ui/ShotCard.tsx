@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Heart, MessageCircle, Bookmark } from 'lucide-react'
 import type { Shot } from '../../types'
 import { useAuthStore } from '../../store/authStore'
@@ -18,7 +18,7 @@ const OverlayIconButton = ({
   <button
     type="button"
     className={cn(
-      'flex aspect-square w-10 shrink-0 items-center justify-center rounded-full bg-white transition-transform active:scale-90 disabled:cursor-not-allowed disabled:opacity-60',
+      'flex aspect-square w-10 shrink-0 items-center justify-center rounded-full bg-white btn-pop disabled:cursor-not-allowed disabled:opacity-60',
       active ? 'text-primary' : 'text-ink hover:text-primary',
       className
     )}
@@ -28,6 +28,7 @@ const OverlayIconButton = ({
 
 export const ShotCard = ({ shot }: ShotCardProps) => {
   const isAuthed = useAuthStore((s) => !!s.accessToken)
+  const navigate = useNavigate()
   const likeMutation = useLikeShotMutation(shot.id)
   const saveMutation = useSaveShotMutation(shot.id)
 
@@ -43,6 +44,12 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
     e.stopPropagation()
     if (!isAuthed || saveMutation.isPending) return
     saveMutation.mutate()
+  }
+
+  const handleOpenComments = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    navigate(`/shot/${shot.id}#comments`)
   }
 
   return (
@@ -74,10 +81,7 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
             </OverlayIconButton>
             <OverlayIconButton
               title="Коментарі"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-              }}
+              onClick={handleOpenComments}
             >
               <MessageCircle className="h-6 w-6" />
             </OverlayIconButton>
@@ -111,10 +115,15 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
             <Heart className="h-3.5 w-3.5" fill={shot.is_liked ? 'currentColor' : 'none'} />
             {shot.likes_count}
           </span>
-          <span className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={handleOpenComments}
+            title="Переглянути коментарі"
+            className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer"
+          >
             <MessageCircle className="h-3.5 w-3.5" />
             {shot.comments_count}
-          </span>
+          </button>
         </div>
       </div>
     </div>

@@ -71,7 +71,11 @@ export const authApi = {
     api.get('/auth/profile/'),
 
   updateProfile: (data: FormData | Record<string, unknown>) =>
-    api.patch('/auth/profile/', data),
+  api.patch('/auth/profile/', data, {
+    headers: {
+      'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
+    },
+  }),
 
   // бекенд-ендпоінт відновлення пароля
   requestPasswordReset: (email: string) =>

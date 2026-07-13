@@ -75,12 +75,13 @@ export const Navbar = () => {
               >
                 Опублікувати
               </Link>
-              <Link to="/profile">
+              <Link to={`/users/${user.username}`}>
                 <div className="flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-surface-alt transition-colors">
                   <Avatar src={user.avatar} username={user.username} className="w-9 h-9" textClassName="text-xs" />
                   <span className="hidden sm:block text-sm font-semibold text-ink">{user.username}</span>
                 </div>
               </Link>
+
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Вийти
               </Button>

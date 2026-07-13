@@ -1,15 +1,17 @@
-import { useParams, Link } from 'react-router'
-import { useState, type FormEvent } from 'react'
+import { useParams, Link, useLocation } from 'react-router'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Heart, Bookmark, Trash2, Calendar, Send } from 'lucide-react'
 import { useShotQuery, useDeleteShotMutation, useLikeShotMutation, useSaveShotMutation } from '../hooks/useShots'
 import { useCommentsQuery, useAddCommentMutation, useDeleteCommentMutation } from '../hooks/useComments'
 import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
 import { Avatar } from '../components/ui/Avatar'
+import { CommentsSkeleton } from '../components/ui/CommentsSkeleton'
 import { cn } from '../utils/cn'
 
 export const ShotDetailPage = () => {
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
   const currentUser = useAuthStore((s) => s.user)
   const isAuthed = useAuthStore((s) => !!s.accessToken)
 
@@ -22,6 +24,12 @@ export const ShotDetailPage = () => {
   const addCommentMutation = useAddCommentMutation(id!)
   const deleteCommentMutation = useDeleteCommentMutation(id!)
   const [commentText, setCommentText] = useState('')
+
+  useEffect(() => {
+    if (location.hash === '#comments' && shot) {
+      document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [location.hash, shot])
 
   const handleAddComment = (e: FormEvent) => {
     e.preventDefault()
@@ -111,7 +119,7 @@ export const ShotDetailPage = () => {
               type="button"
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
-              className="w-10 h-10 rounded-full border border-red-500/30 bg-red-950/20 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all cursor-pointer disabled:opacity-50"
+              className="w-10 h-10 rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white hover:border-red-500 flex items-center justify-center transition-colors btn-pop cursor-pointer disabled:opacity-50"
               title="Видалити Shot"
             >
               <Trash2 className="w-5 h-5" />
@@ -135,7 +143,8 @@ export const ShotDetailPage = () => {
             </p>
           </div>
 
-          <div>
+          {/* Коментарі */}
+          <div id="comments" className="scroll-mt-24">
             <h3 className="text-lg font-bold text-ink mb-4">Коментарі ({shot.comments_count})</h3>
 
             {isAuthed && (
@@ -150,14 +159,14 @@ export const ShotDetailPage = () => {
                 <button
                   type="submit"
                   disabled={!commentText.trim() || addCommentMutation.isPending}
-                  className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-dark transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+                  className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-dark transition-colors btn-pop disabled:opacity-50 cursor-pointer shrink-0"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </form>
             )}
 
-            {commentsLoading && <p className="text-sm text-muted">Завантаження коментарів...</p>}
+            {commentsLoading && <CommentsSkeleton />}
 
             {!commentsLoading && commentsData?.results.length === 0 && (
               <p className="text-sm text-muted">Коментарів поки немає. Будьте першим!</p>
@@ -185,7 +194,7 @@ export const ShotDetailPage = () => {
                       type="button"
                       onClick={() => deleteCommentMutation.mutate(comment.id)}
                       disabled={deleteCommentMutation.isPending}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-red-500 shrink-0 self-start mt-2 cursor-pointer disabled:opacity-50"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-red-500 shrink-0 self-start mt-2 cursor-pointer disabled:opacity-50 btn-pop"
                       title="Видалити коментар"
                     >
                       <Trash2 className="w-4 h-4" />
