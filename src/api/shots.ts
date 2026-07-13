@@ -9,7 +9,7 @@ export interface GetShotsParams {
   author?: number | string
 }
 
-// Ендпоінти згідно з Фазою 0 API контракту (`GET/POST /api/shots/`, `GET/PATCH/DELETE /api/shots/:id/`)
+// Ендпоінти `GET/POST /api/shots/`, `GET/PATCH/DELETE /api/shots/:id/`
 export const shotsApi = {
   getShots: (params: GetShotsParams) =>
     api.get<PaginatedResponse<Shot>>('/shots/', { params }),
@@ -28,7 +28,7 @@ export const shotsApi = {
 
   deleteShot: (id: string | number) => api.delete(`/shots/${id}/`),
 
-  // Social API (Фаза 0)
+  // Social API
   likeShot: (id: string | number) =>
     api.post<{ is_liked: boolean; likes_count: number }>(`/shots/${id}/like/`),
 

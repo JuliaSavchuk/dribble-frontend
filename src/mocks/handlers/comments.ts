@@ -1,20 +1,19 @@
 import { http, HttpResponse } from 'msw'
 import type { Comment } from '../../types'
+import { mockCurrentUser } from '../data/currentUser'
+import { MOCK_OTHER_USERS, toShotAuthor } from '../data/users'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
-// In-memory коментарі, згруповані за id Shot
+const lvivDesigner = MOCK_OTHER_USERS.find((u) => u.username === 'lviv_designer')!
+
+// In-memory коментарі
 const mockComments: Record<string, Comment[]> = {
   '103': [
     {
       id: 1,
       text: 'Дуже круте рішення, особливо кольорова палітра!',
-      author: {
-        id: 2,
-        username: 'lviv_designer',
-        avatar:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80',
-      },
+      author: toShotAuthor(lvivDesigner),
       created_at: '2026-06-08T11:00:00Z',
     },
   ],
@@ -50,12 +49,7 @@ export const commentsHandlers = [
     const newComment: Comment = {
       id: nextCommentId++,
       text: body.text.trim(),
-      author: {
-        id: 1,
-        username: 'kyiv_creator',
-        avatar:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
-      },
+      author: toShotAuthor(mockCurrentUser),
       created_at: new Date().toISOString(),
     }
 
@@ -63,5 +57,30 @@ export const commentsHandlers = [
     mockComments[id].push(newComment)
 
     return HttpResponse.json(newComment, { status: 201 })
+  }),
+
+  // DELETE /shots/:id/comments/:commentId/ — видалення власного коментаря
+  http.delete(`${BASE_URL}/shots/:id/comments/:commentId/`, ({ params, request }) => {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return HttpResponse.json({ detail: 'Облікові дані не надано.' }, { status: 401 })
+    }
+
+    const id = params.id as string
+    const commentId = parseInt(params.commentId as string, 10)
+    const list = mockComments[id] || []
+    const index = list.findIndex((c) => c.id === commentId)
+
+    if (index === -1) {
+      return HttpResponse.json({ detail: 'Коментар не знайдено.' }, { status: 404 })
+    }
+
+    // Дозволяємо видаляти лише власні коментарі.
+    if (list[index].author.id !== mockCurrentUser.id) {
+      return HttpResponse.json({ detail: 'Можна видаляти лише власні коментарі.' }, { status: 403 })
+    }
+
+    list.splice(index, 1)
+    return new HttpResponse(null, { status: 204 })
   }),
 ]

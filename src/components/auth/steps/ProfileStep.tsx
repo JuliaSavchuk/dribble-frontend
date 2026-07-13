@@ -52,7 +52,7 @@ export const ProfileStep = ({
           <AvatarPicker preview={avatarPreview} onChange={onAvatarChange} disabled={isLoading} />
 
           <div className="flex w-full flex-col gap-1.5">
-            <label htmlFor="fullName" className="text-[15px] font-semibold text-[#1A202C]">
+            <label htmlFor="fullName" className="text-[0.9375rem] font-semibold text-[#1A202C]">
               Full name*
             </label>
             <AuthInput
@@ -68,7 +68,7 @@ export const ProfileStep = ({
           </div>
 
           <div className="flex w-full flex-col gap-1.5">
-            <label htmlFor="location" className="text-[15px] font-semibold text-[#1A202C]">
+            <label htmlFor="location" className="text-[0.9375rem] font-semibold text-[#1A202C]">
               Location
             </label>
             <AuthInput

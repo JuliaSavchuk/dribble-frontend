@@ -54,7 +54,6 @@ api.interceptors.response.use(
 )
 
 // Typed API helpers
-
 export const authApi = {
   register: (data: { email: string; username: string; password: string; password2: string }) =>
     api.post('/auth/register/', data),
@@ -74,11 +73,14 @@ export const authApi = {
   updateProfile: (data: FormData | Record<string, unknown>) =>
     api.patch('/auth/profile/', data),
 
-  //Не описані в Фазі 0 контракту — підготовлені наперед під майбутній
-  // бекенд-ендпоінт відновлення пароля. Якщо ендпоінт відсутній, запит
+  // бекенд-ендпоінт відновлення пароля
   requestPasswordReset: (email: string) =>
     api.post('/auth/password-reset/', { email }),
 
   confirmPasswordReset: (data: { email: string; password: string; password2: string }) =>
     api.post('/auth/password-reset/confirm/', data),
+
+  // Зміна паролю з профілю - POST /api/auth/password/change/
+  changePassword: (data: { old_password: string; new_password: string; new_password2: string }) =>
+    api.post('/auth/password/change/', data),
 }

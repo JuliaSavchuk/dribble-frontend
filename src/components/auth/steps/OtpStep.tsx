@@ -53,8 +53,6 @@ export const OtpStep = ({
   const handleResend = () => {
     if (cooldown > 0) return
     setCooldown(RESEND_COOLDOWN)
-    // Бекенд поки не має ендпоінту повторної відправки коду —
-    // тут лише скидається таймер для узгодженості з дизайном.
   }
 
   return (
@@ -62,7 +60,7 @@ export const OtpStep = ({
       <div className="flex flex-col items-center">
         <VoxelLogo className="mb-5" />
         <h1 className="text-xl font-bold text-voxel-black">{title}</h1>
-        <p className="mt-2 max-w-[320px] text-center text-sm text-voxel-gray-dark">
+        <p className="mt-2 max-w-[20rem] text-center text-sm text-voxel-gray-dark">
           We've sent you a passcode.
           <br />
           Please check your inbox at {maskEmail(email)}.

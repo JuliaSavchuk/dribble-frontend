@@ -92,7 +92,7 @@ export const UploadPage = () => {
             <label className="text-xs font-semibold text-muted tracking-wider uppercase">Зображення роботи</label>
 
             {imagePreview ? (
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border">
+              <div className="relative aspect-4/3 rounded-2xl overflow-hidden border border-border">
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                 <button
                   type="button"
@@ -112,7 +112,7 @@ export const UploadPage = () => {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`aspect-[4/3] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all ${
+                className={`aspect-4/3 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-6 text-center cursor-pointer transition-all ${
                   dragActive ? 'border-primary bg-primary/5' : 'border-border bg-surface hover:bg-surface-alt'
                 }`}
               >
@@ -141,7 +141,7 @@ export const UploadPage = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full rounded-2xl bg-surface border border-border px-4 py-3 text-sm text-ink focus:outline-none focus:border-primary min-h-[100px]"
+              className="w-full rounded-2xl bg-surface border border-border px-4 py-3 text-sm text-ink focus:outline-none focus:border-primary min-h-25"
             />
           </div>
 

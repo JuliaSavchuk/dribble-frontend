@@ -8,4 +8,8 @@ export const commentsApi = {
 
   addComment: (shotId: string | number, text: string) =>
     api.post<Comment>(`/shots/${shotId}/comments/`, { text }),
+
+  // Видалення власного коментаря - DELETE /shots/:id/comments/:commentId/
+  deleteComment: (shotId: string | number, commentId: number) =>
+    api.delete(`/shots/${shotId}/comments/${commentId}/`),
 }

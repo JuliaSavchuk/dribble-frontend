@@ -59,7 +59,7 @@ export const AvatarPicker = ({ preview, onChange, disabled, className }: AvatarP
           className="hidden"
         />
       </button>
-      <p className="text-center text-[11px] leading-tight text-voxel-gray-dark">
+      <p className="text-center text-[0.6875rem] leading-tight text-voxel-gray-dark">
         300px x 300px minimum
         <br />
         JPG, GIF, or PNG. Max file size 4MB.

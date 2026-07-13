@@ -61,9 +61,9 @@ export const OtpInput = ({ length = 6, value, onChange, disabled }: OtpInputProp
             'h-18 w-18 bg-white/30 text-center text-2xl font-bold text-[#1A202C]',
             'transition-all duration-100 focus:outline-none',
             value[index]
-              ? 'border-[3px] border-[#1A202C]'
+              ? 'border-[0.1875rem] border-[#1A202C]'
               : 'border-2 border-[#CBD5E0]',
-            'focus:border-[3px] focus:border-[#236D8A] focus:bg-white focus:shadow-lg focus:shadow-[#236D8A]/20',
+            'focus:border-[0.1875rem] focus:border-[#236D8A] focus:bg-white focus:shadow-lg focus:shadow-[#236D8A]/20',
             'disabled:opacity-50',
             index === 0 && 'rounded-l-2xl rounded-r-none',
             index === length - 1 && 'rounded-r-2xl rounded-l-none',

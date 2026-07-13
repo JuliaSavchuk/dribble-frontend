@@ -10,8 +10,6 @@ interface ShotCardProps {
   shot: Shot
 }
 
-// Кругла кнопка дії на hover-оверлеї (лайк / коментар / збереження) —
-// відповідає специфікації з Figma: коло 2.5rem (40px), біле тло, іконка 1.5rem (24px) по центру.
 const OverlayIconButton = ({
   active,
   className,
@@ -95,9 +93,9 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
         </div>
       </Link>
 
-      {/* Автор + лічильники — завжди видимі, під зображенням (як у макеті) */}
+      {/* Автор + лічильники — завжди видимі, під зображенням*/}
       <div className="flex items-center justify-between gap-3">
-        <Link to={`/users/${shot.author.id}`} className="flex min-w-0 items-center gap-2.5">
+        <Link to={`/users/${shot.author.username}`} className="flex min-w-0 items-center gap-2.5">
           <Avatar
             src={shot.author.avatar}
             username={shot.author.username}

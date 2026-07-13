@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router'
-import { useProfile, useUpdateProfile } from '../hooks/useAuth'
+import { useProfile, useUpdateProfile, useChangePassword } from '../hooks/useAuth'
 import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Alert } from '../components/ui/Alert'
 import { Spinner } from '../components/ui/Spinner'
+import { getErrorMessage } from '../utils/errors'
 
 //Stat Card
 const StatCard = ({ value, label }: { value: number; label: string }) => (
@@ -75,13 +76,13 @@ const WebIcon = () => (
 )
 
 //Main component
-
 export const ProfilePage = () => {
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
 
   const { data: profile, isLoading } = useProfile()
   const updateMutation = useUpdateProfile()
+  const changePasswordMutation = useChangePassword()
 
   //Local form state
   const [bio, setBio] = useState('')
@@ -93,22 +94,26 @@ export const ProfilePage = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState('')
 
+  //Password change form state
+  const [oldPassword, setOldPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [newPassword2, setNewPassword2] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  //Sync form state when profile loads
-  useEffect(() => {
-    if (profile) {
-      setBio(profile.bio ?? '')
-      setWebsite(profile.website ?? '')
-      setTwitter(profile.twitter ?? '')
-      setInstagram(profile.instagram ?? '')
-      setLinkedin(profile.linkedin ?? '')
-      if (!avatarPreview) {
-        setAvatarPreview(profile.avatar)
-      }
-    }
-  //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile])
+  //Синхронізація форми з даними профілю — виконується один раз, коли профіль щойно завантажився
+  const [hydratedForId, setHydratedForId] = useState<number | null>(null)
+  if (profile && profile.id !== hydratedForId) {
+    setHydratedForId(profile.id)
+    setBio(profile.bio ?? '')
+    setWebsite(profile.website ?? '')
+    setTwitter(profile.twitter ?? '')
+    setInstagram(profile.instagram ?? '')
+    setLinkedin(profile.linkedin ?? '')
+    setAvatarPreview(profile.avatar)
+  }
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -136,6 +141,34 @@ export const ProfilePage = () => {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setPasswordError('')
+
+    if (newPassword !== newPassword2) {
+      setPasswordError('Нові паролі не співпадають.')
+      return
+    }
+    if (newPassword.length < 8) {
+      setPasswordError('Пароль має містити щонайменше 8 символів.')
+      return
+    }
+
+    changePasswordMutation.mutate(
+      { old_password: oldPassword, new_password: newPassword, new_password2: newPassword2 },
+      {
+        onSuccess: () => {
+          setPasswordSuccess('Пароль успішно змінено!')
+          setOldPassword('')
+          setNewPassword('')
+          setNewPassword2('')
+          setTimeout(() => setPasswordSuccess(''), 4000)
+        },
+        onError: (err) => setPasswordError(getErrorMessage(err)),
+      }
+    )
   }
 
   //Loading state
@@ -348,6 +381,55 @@ export const ProfilePage = () => {
             size="lg"
           >
             Зберегти зміни
+          </Button>
+        </form>
+      </div>
+
+      {/* Зміна паролю*/}
+      <div className="bg-white border border-border rounded-3xl p-8 shadow-2xl shadow-black/5 mt-6">
+        <h2 className="text-lg font-bold text-ink mb-6">Зміна паролю</h2>
+
+        {passwordSuccess && <Alert type="success" message={passwordSuccess} className="mb-6" />}
+        {passwordError && <Alert type="error" message={passwordError} className="mb-6" />}
+
+        <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
+          <Input
+            label="Поточний пароль"
+            type="password"
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+            autoComplete="current-password"
+            disabled={changePasswordMutation.isPending}
+            required
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="Новий пароль"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+              disabled={changePasswordMutation.isPending}
+              required
+            />
+            <Input
+              label="Підтвердіть новий пароль"
+              type="password"
+              value={newPassword2}
+              onChange={(e) => setNewPassword2(e.target.value)}
+              autoComplete="new-password"
+              disabled={changePasswordMutation.isPending}
+              required
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="secondary"
+            isLoading={changePasswordMutation.isPending}
+            disabled={changePasswordMutation.isPending}
+            className="w-full sm:w-auto sm:self-start"
+          >
+            Змінити пароль
           </Button>
         </form>
       </div>

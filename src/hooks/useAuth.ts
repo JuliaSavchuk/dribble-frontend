@@ -5,7 +5,6 @@ import { useAuthStore } from '../store/authStore'
 import type { User } from '../types'
 
 // useLogin
-
 export const useLogin = () => {
   const setAuth = useAuthStore((state) => state.setAuth)
   const navigate = useNavigate()
@@ -14,7 +13,6 @@ export const useLogin = () => {
     mutationFn: async (credentials: { email: string; password: string }) => {
       const { data: tokens } = await authApi.login(credentials)
 
-      // Fetch profile with the new token directly (not via store yet)
       const { data: profile } = await api.get('/auth/profile/', {
         headers: { Authorization: `Bearer ${tokens.access}` },
       })
@@ -29,10 +27,6 @@ export const useLogin = () => {
 }
 
 // useCompleteRegistration
-// Викликається в кінці майстра реєстрації (після кроків email → otp → password → profile).
-// Бекенд не повертає токени з /auth/register/, тож одразу після створення
-// акаунта виконується логін, а за наявності аватара/локації — PATCH профілю.
-
 export const useCompleteRegistration = () => {
   const setAuth = useAuthStore((state) => state.setAuth)
   const navigate = useNavigate()
@@ -62,9 +56,6 @@ export const useCompleteRegistration = () => {
         headers: { Authorization: `Bearer ${tokens.access}` },
       })
 
-      // "Tell us about yourself": бекенд поки не має окремих полів
-      // full name / location, тому location зберігається в bio,
-      // а аватар надсилається multipart-ом окремим запитом.
       if (payload.avatar || payload.location) {
         const formData = new FormData()
         if (payload.avatar) formData.append('avatar', payload.avatar)
@@ -86,9 +77,6 @@ export const useCompleteRegistration = () => {
 }
 
 // usePasswordResetRequest / usePasswordResetConfirm
-// ⚠️ Бекенд-ендпоінти ще не описані в контракті Фази 0. Хуки готові до
-// підключення; до того часу помилка обробляється в RecoveryPage.
-
 export const usePasswordResetRequest = () => {
   return useMutation({
     mutationFn: async (email: string) => {
@@ -108,7 +96,6 @@ export const usePasswordResetConfirm = () => {
 }
 
 // useGoogleLogin
-
 export const useGoogleLogin = () => {
   const setAuth = useAuthStore((state) => state.setAuth)
   const navigate = useNavigate()
@@ -117,7 +104,6 @@ export const useGoogleLogin = () => {
     mutationFn: async (token: string) => {
       const { data: oauthData } = await authApi.googleLogin(token)
 
-      // Fetch profile passing the new token directly — store not updated yet
       const { data: profile } = await api.get('/auth/profile/', {
         headers: { Authorization: `Bearer ${oauthData.access}` },
       })
@@ -132,7 +118,6 @@ export const useGoogleLogin = () => {
 }
 
 // useProfile
-
 export const useProfile = () => {
   const user = useAuthStore((state) => state.user)
 
@@ -142,14 +127,22 @@ export const useProfile = () => {
       const { data } = await authApi.getProfile()
       return data as User
     },
-    // Use store user as initial data to prevent flash
     initialData: user ?? undefined,
     staleTime: 1000 * 60 * 5,
   })
 }
 
-// useUpdateProfile
+// useChangePassword
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: async (payload: { old_password: string; new_password: string; new_password2: string }) => {
+      const { data } = await authApi.changePassword(payload)
+      return data
+    },
+  })
+}
 
+// useUpdateProfile
 export const useUpdateProfile = () => {
   const updateUser = useAuthStore((state) => state.updateUser)
   const queryClient = useQueryClient()
@@ -165,7 +158,6 @@ export const useUpdateProfile = () => {
     }) => {
       const { avatar, ...rest } = payload
 
-      // Always use FormData so the server can handle both text and file
       const formData = new FormData()
       Object.entries(rest).forEach(([key, value]) => {
         if (value !== undefined) formData.append(key, value)

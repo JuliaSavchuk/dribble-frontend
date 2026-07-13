@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router'
 import { useState, type FormEvent } from 'react'
 import { Heart, Bookmark, Trash2, Calendar, Send } from 'lucide-react'
 import { useShotQuery, useDeleteShotMutation, useLikeShotMutation, useSaveShotMutation } from '../hooks/useShots'
-import { useCommentsQuery, useAddCommentMutation } from '../hooks/useComments'
+import { useCommentsQuery, useAddCommentMutation, useDeleteCommentMutation } from '../hooks/useComments'
 import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
 import { Avatar } from '../components/ui/Avatar'
@@ -20,6 +20,7 @@ export const ShotDetailPage = () => {
 
   const { data: commentsData, isLoading: commentsLoading } = useCommentsQuery(id!)
   const addCommentMutation = useAddCommentMutation(id!)
+  const deleteCommentMutation = useDeleteCommentMutation(id!)
   const [commentText, setCommentText] = useState('')
 
   const handleAddComment = (e: FormEvent) => {
@@ -65,7 +66,7 @@ export const ShotDetailPage = () => {
         <div>
           <h1 className="text-3xl font-extrabold text-ink mb-2">{shot.title}</h1>
           <div className="flex items-center gap-3">
-            <Link to={`/users/${shot.author.id}`}>
+            <Link to={`/users/${shot.author.username}`}>
               <Avatar
                 src={shot.author.avatar}
                 username={shot.author.username}
@@ -73,7 +74,7 @@ export const ShotDetailPage = () => {
               />
             </Link>
             <div>
-              <Link to={`/users/${shot.author.id}`} className="text-sm font-medium text-ink hover:text-primary transition-colors">
+              <Link to={`/users/${shot.author.username}`} className="text-sm font-medium text-ink hover:text-primary transition-colors">
                 {shot.author.username}
               </Link>
               <p className="text-xs text-muted flex items-center gap-1">
@@ -134,7 +135,6 @@ export const ShotDetailPage = () => {
             </p>
           </div>
 
-          {/* Коментарі (Comments API, Фаза 0) */}
           <div>
             <h3 className="text-lg font-bold text-ink mb-4">Коментарі ({shot.comments_count})</h3>
 
@@ -165,7 +165,7 @@ export const ShotDetailPage = () => {
 
             <div className="flex flex-col gap-4">
               {commentsData?.results.map((comment) => (
-                <div key={comment.id} className="flex gap-3">
+                <div key={comment.id} className="flex gap-3 group">
                   <Avatar
                     src={comment.author.avatar}
                     username={comment.author.username}
@@ -180,6 +180,17 @@ export const ShotDetailPage = () => {
                     </div>
                     <p className="text-sm text-ink/80 mt-0.5">{comment.text}</p>
                   </div>
+                  {currentUser?.id === comment.author.id && (
+                    <button
+                      type="button"
+                      onClick={() => deleteCommentMutation.mutate(comment.id)}
+                      disabled={deleteCommentMutation.isPending}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-red-500 shrink-0 self-start mt-2 cursor-pointer disabled:opacity-50"
+                      title="Видалити коментар"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

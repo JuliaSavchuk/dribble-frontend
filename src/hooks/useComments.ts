@@ -23,3 +23,16 @@ export const useAddCommentMutation = (shotId: string | number) => {
     },
   })
 }
+
+// Видалення власного коментаря
+export const useDeleteCommentMutation = (shotId: string | number) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (commentId: number) => commentsApi.deleteComment(shotId, commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', shotId] })
+      queryClient.invalidateQueries({ queryKey: ['shot', shotId] })
+    },
+  })
+}

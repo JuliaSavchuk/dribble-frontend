@@ -1,27 +1,11 @@
-import { createBrowserRouter, Navigate, Outlet } from 'react-router'
+import { createBrowserRouter } from 'react-router'
 import { Layout } from './components/layout/Layout'
-import { useAuthStore } from './store/authStore'
+import { ProtectedRoute, GuestRoute } from './components/routing/RouteGuards'
 
-// Захищений маршрут — редиректить на /login якщо немає токена
-const ProtectedRoute = () => {
-  const token = useAuthStore((state) => state.accessToken)
-  if (!token) return <Navigate to="/login" replace />
-  return <Outlet />
-}
-
-// Гостьовий маршрут — редиректить на /profile якщо юзер вже залогінений
-const GuestRoute = () => {
-  const token = useAuthStore((state) => state.accessToken)
-  if (token) return <Navigate to="/profile" replace />
-  return <Outlet />
-}
-
-// ─── Router ───────────────────────────────────────────────────────────────────
-
+//Router
 export const router = createBrowserRouter([
   // Публічна головна сторінка — перша точка входу для будь-якого відвідувача.
-  // Доступна і гостям, і автентифікованим юзерам (Navbar сам показує
-  // потрібний стан — "Вхід/Реєстрація" або аватар користувача).
+  // Доступна і гостям, і автентифікованим юзерам (Navbar сам показує потрібний стан — "Вхід/Реєстрація" або аватар користувача).
   {
     Component: Layout,
     children: [
@@ -39,12 +23,12 @@ export const router = createBrowserRouter([
         path: '/shot/:id',
         lazy: () => import('./pages/ShotDetailPage').then((m) => ({ Component: m.ShotDetailPage })),
       },
-      // Публічний профіль користувача (Фаза 0, Social API)
+      // Публічний профіль користувача (Social API)
       {
-        path: '/users/:id',
+        path: '/users/:username',
         lazy: () => import('./pages/UserProfilePage').then((m) => ({ Component: m.UserProfilePage })),
       },
-      // Глобальний пошук (Фаза 0, Search API)
+      // Глобальний пошук ( Search API)
       {
         path: '/search',
         lazy: () => import('./pages/SearchPage').then((m) => ({ Component: m.SearchPage })),

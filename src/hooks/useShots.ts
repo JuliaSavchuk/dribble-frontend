@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router'
 import { shotsApi, type GetShotsParams } from '../api/shots'
 import type { PaginatedResponse, Shot } from '../types'
 
-// ─── useFeedQuery ───────────────────────────────────────────────────────────
-// Нескінченна прокрутка з автовизначенням offset із пагінаційних лінків DRF
-// (формат пагінації погоджений у Фазі 0: count/next/previous/results).
-
-export const useFeedQuery = (filters: Omit<GetShotsParams, 'limit' | 'offset'>) => {
+//useFeedQuery 
+export const useFeedQuery = (
+  filters: Omit<GetShotsParams, 'limit' | 'offset'>,
+  options?: { enabled?: boolean }
+) => {
   return useInfiniteQuery({
     queryKey: ['feed', filters],
     queryFn: async ({ pageParam }) => {
@@ -29,11 +29,11 @@ export const useFeedQuery = (filters: Omit<GetShotsParams, 'limit' | 'offset'>) 
         return undefined
       }
     },
+    enabled: options?.enabled ?? true,
   })
 }
 
-// ─── useShotQuery ───────────────────────────────────────────────────────────
-
+//useShotQuery
 export const useShotQuery = (id: string | number) => {
   return useQuery({
     queryKey: ['shot', id],
@@ -45,8 +45,7 @@ export const useShotQuery = (id: string | number) => {
   })
 }
 
-// ─── useCreateShotMutation ──────────────────────────────────────────────────
-
+//useCreateShotMutation
 export const useCreateShotMutation = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -54,15 +53,13 @@ export const useCreateShotMutation = () => {
   return useMutation({
     mutationFn: shotsApi.createShot,
     onSuccess: ({ data }) => {
-      // Скидаємо стрічку, щоб нова робота з'явилась зверху
       queryClient.invalidateQueries({ queryKey: ['feed'] })
       navigate(`/shot/${data.id}`)
     },
   })
 }
 
-// ─── useDeleteShotMutation ──────────────────────────────────────────────────
-
+//useDeleteShotMutation
 export const useDeleteShotMutation = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -76,10 +73,7 @@ export const useDeleteShotMutation = () => {
   })
 }
 
-// ─── useLikeShotMutation / useSaveShotMutation ──────────────────────────────
-// Toggle-поведінка згідно з Social API (Фаза 0): POST /shots/:id/like/ та /save/.
-// Оптимістично оновлюємо кеш детальної сторінки та стрічки.
-
+// useLikeShotMutation / useSaveShotMutation 
 export const useLikeShotMutation = (id: string | number) => {
   const queryClient = useQueryClient()
 
@@ -90,6 +84,7 @@ export const useLikeShotMutation = (id: string | number) => {
         prev ? { ...prev, is_liked: data.is_liked, likes_count: data.likes_count } : prev
       )
       queryClient.invalidateQueries({ queryKey: ['feed'] })
+      queryClient.invalidateQueries({ queryKey: ['likedShots'] })
     },
   })
 }

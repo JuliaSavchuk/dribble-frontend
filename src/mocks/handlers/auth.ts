@@ -1,28 +1,21 @@
 import { http, HttpResponse } from 'msw'
+import { mockCurrentUser } from '../data/currentUser'
+import { mockShots } from './shots'
+import { getFollowerUsernames, getFollowingUsernames } from '../data/follows'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
-
-// ─── In-memory mock database ──────────────────────────────────────────────────
-
-let mockUser = {
-  id: 1,
-  email: 'designer@example.com',
-  username: 'kyiv_creator',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
-  bio: 'UI/UX Designer & Illustrator from Kyiv',
-  website: 'https://portfolio.com',
-  twitter: 'https://twitter.com/kyiv_creator',
-  instagram: 'https://instagram.com/kyiv_creator',
-  linkedin: 'https://linkedin.com/in/kyiv_creator',
-  shots_count: 12,
-  followers_count: 48,
-  following_count: 23,
-}
 
 // Track registered users for mock validation
 const registeredUsers: Array<{ email: string; username: string; password: string }> = [
   { email: 'designer@example.com', username: 'kyiv_creator', password: 'PassWord123!' },
 ]
+
+const buildFullProfileResponse = () => ({
+  ...mockCurrentUser,
+  shots_count: mockShots.filter((s) => s.author.username === mockCurrentUser.username).length,
+  followers_count: getFollowerUsernames(mockCurrentUser.username).length,
+  following_count: getFollowingUsernames(mockCurrentUser.username).length,
+})
 
 export const authHandlers = [
   //POST /auth/register/
@@ -70,12 +63,11 @@ export const authHandlers = [
       password: body.password,
     })
 
-    // Update mockUser for the first registered user
-    mockUser.email = body.email
-    mockUser.username = body.username
+    mockCurrentUser.email = body.email
+    mockCurrentUser.username = body.username
 
     return HttpResponse.json(
-      { id: mockUser.id, email: body.email, username: body.username },
+      { id: mockCurrentUser.id, email: body.email, username: body.username },
       { status: 201 }
     )
   }),
@@ -132,7 +124,6 @@ export const authHandlers = [
       )
     }
 
-    // Simulate Google OAuth: always succeeds with mock token
     const isNew = !registeredUsers.some((u) => u.email === 'google@example.com')
     if (isNew) {
       registeredUsers.push({
@@ -140,9 +131,10 @@ export const authHandlers = [
         username: 'google_user',
         password: '',
       })
-      mockUser.email = 'google@example.com'
-      mockUser.username = 'google_user'
-      mockUser.avatar = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80'
+      mockCurrentUser.email = 'google@example.com'
+      mockCurrentUser.username = 'google_user'
+      mockCurrentUser.avatar =
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80'
     }
 
     return HttpResponse.json(
@@ -166,7 +158,7 @@ export const authHandlers = [
       )
     }
 
-    return HttpResponse.json(mockUser, { status: 200 })
+    return HttpResponse.json(buildFullProfileResponse(), { status: 200 })
   }),
 
   //PATCH /auth/profile/
@@ -187,26 +179,56 @@ export const authHandlers = [
 
       const avatarFile = formData.get('avatar') as File | null
       if (avatarFile && avatarFile.size > 0) {
-        mockUser.avatar = URL.createObjectURL(avatarFile)
+        mockCurrentUser.avatar = URL.createObjectURL(avatarFile)
       }
 
       for (const [key, value] of formData.entries()) {
-        if (key !== 'avatar' && key in mockUser) {
-          ;(mockUser as Record<string, unknown>)[key] = value as string
+        if (key !== 'avatar' && key in mockCurrentUser) {
+          ;(mockCurrentUser as unknown as Record<string, unknown>)[key] = value as string
         }
       }
     } else {
-      const body = (await request.json()) as Partial<typeof mockUser>
-      mockUser = { ...mockUser, ...body }
+      const body = (await request.json()) as Partial<typeof mockCurrentUser>
+      Object.assign(mockCurrentUser, body)
     }
 
-    return HttpResponse.json(mockUser, { status: 200 })
+    return HttpResponse.json(buildFullProfileResponse(), { status: 200 })
   }),
 
-  // ─── Password recovery (не в контракті Фази 0) ────────────────────────
-  // Повертає 501, щоб фронтенд показував коректне повідомлення «ще не
-  // підтримується сервером» замість мережевої помилки.
-  // Замінити на реальні хендлери, коли бекенд реалізує ендпоінти.
+  //POST /auth/password/change/ — зміна паролю з форми Settings
+  http.post(`${BASE_URL}/auth/password/change/`, async ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return HttpResponse.json({ detail: 'Облікові дані не надано.' }, { status: 401 })
+    }
+
+    const body = (await request.json()) as {
+      old_password?: string
+      new_password?: string
+      new_password2?: string
+    }
+
+    if (!body.old_password || !body.new_password || !body.new_password2) {
+      return HttpResponse.json(
+        { detail: 'Не всі обов\'язкові поля заповнено.' },
+        { status: 400 }
+      )
+    }
+
+    if (body.new_password !== body.new_password2) {
+      return HttpResponse.json({ new_password2: ['Паролі не співпадають.'] }, { status: 400 })
+    }
+
+    const currentUser = registeredUsers.find((u) => u.email === mockCurrentUser.email)
+    if (!currentUser || currentUser.password !== body.old_password) {
+      return HttpResponse.json({ old_password: ['Неправильний поточний пароль.'] }, { status: 400 })
+    }
+
+    currentUser.password = body.new_password
+    return HttpResponse.json({ detail: 'Пароль успішно змінено.' }, { status: 200 })
+  }),
+
+  //Password recovery
   http.post(`${BASE_URL}/auth/password-reset/`, () => {
     return HttpResponse.json(
       { detail: 'Функція відновлення пароля ще не реалізована на сервері.' },

@@ -46,7 +46,7 @@ export const SearchPage = () => {
                 {data.users.results.map((u) => (
                   <Link
                     key={u.id}
-                    to={`/users/${u.id}`}
+                    to={`/users/${u.username}`}
                     className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-white hover:border-ink transition-colors"
                   >
                     <Avatar

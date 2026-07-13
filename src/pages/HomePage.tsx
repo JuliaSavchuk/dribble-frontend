@@ -6,8 +6,7 @@ import { Button } from '../components/ui/Button'
 import { ShotCard } from '../components/ui/ShotCard'
 import { CollageTile } from '../components/ui/CollageTile'
 import { HOME_COLLAGE } from '../mocks/data/homeCollage'
-
-const POPULAR_TAGS = ['branding', 'web design', 'ui kit', 'wireframes', 'typography', 'icon sets', '3d design']
+import { CATEGORY_TAGS } from '../constants/categories'
 
 export const HomePage = () => {
   const user = useAuthStore((s) => s.user)
@@ -17,7 +16,7 @@ export const HomePage = () => {
 
   return (
     <div className="bg-white">
-      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      {/*Hero*/}
       <section className="max-w-[110rem] mx-auto px-6 sm:px-10 pt-16 pb-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <h1 className="font-app font-bold text-5xl sm:text-6xl leading-[1.05] text-ink">
@@ -25,7 +24,7 @@ export const HomePage = () => {
             <br />
             Inspire.
             <br />
-            <span className="text-primary">Ger Discovered</span>
+            <span className="text-primary">Get Discovered</span>
           </h1>
 
           <p className="mt-6 max-w-lg text-lg text-ink/55 font-medium">
@@ -56,11 +55,11 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* ─── Популярні теги ───────────────────────────────────────────────── */}
+      {/*Популярні теги*/}
       <section className="max-w-[110rem] mx-auto px-6 sm:px-10 py-6 flex items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-2xl font-semibold text-ink shrink-0">Popular:</span>
-          {POPULAR_TAGS.map((tag) => (
+          {CATEGORY_TAGS.map((tag) => (
             <Link
               key={tag}
               to={`/feed?tags=${encodeURIComponent(tag)}`}
@@ -79,7 +78,7 @@ export const HomePage = () => {
         </button>
       </section>
 
-      {/* ─── Стрічка популярних робіт ─────────────────────────────────────── */}
+      {/*Стрічка популярних робіт*/}
       <section className="max-w-[110rem] mx-auto px-6 sm:px-10 pb-16">
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

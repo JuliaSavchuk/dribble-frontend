@@ -73,6 +73,14 @@ export interface PasswordResetConfirmRequest {
   password2: string
 }
 
+// Зміна паролю з профілю (Фаза 1, Settings)
+// POST /api/auth/password/change/
+export interface PasswordChangeRequest {
+  old_password: string
+  new_password: string
+  new_password2: string
+}
+
 //Shots
 
 export interface ShotAuthor {
@@ -105,7 +113,7 @@ export interface Comment {
   created_at: string
 }
 
-//Публічний профіль користувача (GET /api/users/:id/)
+//Публічний профіль користувача (GET /api/users/:username/)
 
 export interface PublicProfile {
   id: number
@@ -113,10 +121,22 @@ export interface PublicProfile {
   avatar: string | null
   bio: string
   website: string
+  twitter: string
+  instagram: string
+  linkedin: string
   shots_count: number
   followers_count: number
   following_count: number
   is_following: boolean
+}
+
+// Короткий профіль користувача для списків підписників/підписок
+// (GET /api/users/:username/followers/, /following/) — Фаза 3
+export interface FollowUser {
+  id: number
+  username: string
+  avatar: string | null
+  bio: string
 }
 
 //Search API (GET /api/search/)

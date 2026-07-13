@@ -12,7 +12,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
     return (
       <div className="flex w-full flex-col gap-1.5">
         {label && (
-          <label htmlFor={inputId} className="text-[15px] font-semibold text-[#1A202C]">
+          <label htmlFor={inputId} className="text-[0.9375rem] font-semibold text-[#1A202C]">
             {label}
           </label>
         )}
@@ -20,7 +20,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            'w-full rounded-2xl border-2 border-[#E2E8F0] bg-white px-6 py-4 text-[17px] text-[#1A202C] transition-all duration-200',
+            'w-full rounded-2xl border-2 border-[#E2E8F0] bg-white px-6 py-4 text-[1.0625rem] text-[#1A202C] transition-all duration-200',
             'placeholder:text-[#A0AEC0]',
             'focus:border-[#236D8A] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#236D8A]/10',
             'disabled:cursor-not-allowed disabled:opacity-50',

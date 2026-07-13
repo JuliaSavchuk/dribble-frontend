@@ -1,11 +1,17 @@
 import { http, HttpResponse } from 'msw'
 import type { Shot } from '../../types'
+import { mockCurrentUser } from '../data/currentUser'
+import { MOCK_OTHER_USERS, toShotAuthor } from '../data/users'
+import { currentUserLikes, setCurrentUserLike } from '../data/likes'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
-// ─── In-memory мокова база ──────────────────────────────────────────────────
+const lvivDesigner = MOCK_OTHER_USERS.find((u) => u.username === 'lviv_designer')!
+const odesaCreative = MOCK_OTHER_USERS.find((u) => u.username === 'odesa_creative')!
 
-export let mockShots: Shot[] = [
+//In-memory мокова база
+
+export const mockShots: Shot[] = [
   {
     id: 101,
     title: 'Minimalist Task Manager App',
@@ -16,12 +22,7 @@ export let mockShots: Shot[] = [
     preview:
       'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&h=300&q=80',
     tags: ['mobile', 'productivity', 'glassmorphism'],
-    author: {
-      id: 1,
-      username: 'kyiv_creator',
-      avatar:
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
-    },
+    author: toShotAuthor(mockCurrentUser),
     likes_count: 42,
     comments_count: 5,
     is_liked: false,
@@ -38,15 +39,10 @@ export let mockShots: Shot[] = [
     preview:
       'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&h=300&q=80',
     tags: ['web', 'dashboard', 'saas'],
-    author: {
-      id: 2,
-      username: 'lviv_designer',
-      avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80',
-    },
+    author: toShotAuthor(lvivDesigner),
     likes_count: 108,
     comments_count: 12,
-    is_liked: false,
+    is_liked: true,
     is_saved: false,
     created_at: '2026-06-10T09:15:00Z',
   },
@@ -60,19 +56,38 @@ export let mockShots: Shot[] = [
     preview:
       'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&h=300&q=80',
     tags: ['mobile', 'banking', 'ui'],
-    author: {
-      id: 1,
-      username: 'kyiv_creator',
-      avatar:
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
-    },
+    author: toShotAuthor(mockCurrentUser),
     likes_count: 128,
     comments_count: 14,
     is_liked: false,
     is_saved: false,
     created_at: '2026-06-07T10:30:00Z',
   },
+  {
+    id: 104,
+    title: 'Landing Page for SaaS Startup',
+    description:
+      'Bold, conversion-focused landing page concept with a custom brand identity, gradient accents and animated hero section.',
+    image:
+      'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['web design', 'branding', 'saas'],
+    author: toShotAuthor(odesaCreative),
+    likes_count: 76,
+    comments_count: 3,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-06-14T08:05:00Z',
+  },
 ]
+
+// Повертає копію роботи з актуальним `is_liked` (з реєстру лайків поточного користувача)
+export const serializeShot = (shot: Shot): Shot => ({
+  ...shot,
+  author: shot.author.id === mockCurrentUser.id ? toShotAuthor(mockCurrentUser) : shot.author,
+  is_liked: currentUserLikes(shot.id),
+})
 
 export const shotsHandlers = [
   // GET /shots/ — список з фільтрацією, пошуком та пагінацією (формат Фази 0)
@@ -102,7 +117,7 @@ export const shotsHandlers = [
       filtered = filtered.filter((s) => tagsList.every((tag) => s.tags.includes(tag)))
     }
 
-    const sliced = filtered.slice(offset, offset + limit)
+    const sliced = filtered.slice(offset, offset + limit).map(serializeShot)
     const nextOffset = offset + limit
     const hasNext = nextOffset < filtered.length
 
@@ -133,7 +148,7 @@ export const shotsHandlers = [
     if (!shot) {
       return HttpResponse.json({ detail: 'Роботу не знайдено.' }, { status: 404 })
     }
-    return HttpResponse.json(shot, { status: 200 })
+    return HttpResponse.json(serializeShot(shot), { status: 200 })
   }),
 
   // POST /shots/ — публікація (multipart/form-data)
@@ -166,12 +181,7 @@ export const shotsHandlers = [
       image: imageObjectURL,
       preview: imageObjectURL,
       tags: tagsList,
-      author: {
-        id: 1,
-        username: 'kyiv_creator',
-        avatar:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
-      },
+      author: toShotAuthor(mockCurrentUser),
       likes_count: 0,
       comments_count: 0,
       is_liked: false,
@@ -192,7 +202,7 @@ export const shotsHandlers = [
     }
     const body = (await request.json()) as Partial<Pick<Shot, 'title' | 'description'>>
     Object.assign(shot, body)
-    return HttpResponse.json(shot, { status: 200 })
+    return HttpResponse.json(serializeShot(shot), { status: 200 })
   }),
 
   // DELETE /shots/:id/
@@ -217,9 +227,10 @@ export const shotsHandlers = [
     if (!shot) {
       return HttpResponse.json({ detail: 'Роботу не знайдено.' }, { status: 404 })
     }
-    shot.is_liked = !shot.is_liked
-    shot.likes_count += shot.is_liked ? 1 : -1
-    return HttpResponse.json({ is_liked: shot.is_liked, likes_count: shot.likes_count }, { status: 200 })
+    const nextLiked = !currentUserLikes(id)
+    setCurrentUserLike(id, nextLiked)
+    shot.likes_count += nextLiked ? 1 : -1
+    return HttpResponse.json({ is_liked: nextLiked, likes_count: shot.likes_count }, { status: 200 })
   }),
 
   // POST /shots/:id/save/ — toggle збереження
