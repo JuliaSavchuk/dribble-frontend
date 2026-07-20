@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, Navigate } from 'react-router'
 import { Layout } from './components/layout/Layout'
 import { ProtectedRoute, GuestRoute } from './components/routing/RouteGuards'
 
@@ -71,6 +71,64 @@ export const router = createBrowserRouter([
           {
             path: '/upload',
             lazy: () => import('./pages/UploadPage').then((m) => ({ Component: m.UploadPage })),
+          },
+
+          // Розділ Settings — за аналогією з /pages/auth, кожна сторінка
+          // ділить один спільний SettingsLayout (заголовок + бокова панель).
+          {
+            path: '/settings',
+            element: <Navigate to="/settings/general" replace />,
+          },
+          {
+            path: '/settings/general',
+            lazy: () =>
+              import('./pages/settings/GeneralPage').then((m) => ({ Component: m.GeneralPage })),
+          },
+          {
+            path: '/settings/profile',
+            lazy: () =>
+              import('./pages/settings/EditProfilePage').then((m) => ({
+                Component: m.EditProfilePage,
+              })),
+          },
+          {
+            path: '/settings/password',
+            lazy: () =>
+              import('./pages/settings/PasswordPage').then((m) => ({ Component: m.PasswordPage })),
+          },
+          {
+            path: '/settings/social-profiles',
+            lazy: () =>
+              import('./pages/settings/SocialProfilesPage').then((m) => ({
+                Component: m.SocialProfilesPage,
+              })),
+          },
+          
+          {
+            path: '/settings/company',
+            lazy: () =>
+              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+          },
+          
+          {
+            path: '/settings/payouts',
+            lazy: () =>
+              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+          },
+          {
+            path: '/settings/teams',
+            lazy: () =>
+              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+          },
+          {
+            path: '/settings/notifications',
+            lazy: () =>
+              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+          },
+          {
+            path: '/settings/privacy-security',
+            lazy: () =>
+              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
           },
         ],
       },

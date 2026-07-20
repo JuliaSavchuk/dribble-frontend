@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { ChevronDown, Search, Globe, Menu, X } from 'lucide-react'
+import { ChevronDown, Search, Globe, Menu, X, Settings } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { Button } from '../ui/Button'
 import { Avatar } from '../ui/Avatar'
@@ -87,6 +87,14 @@ export const Navbar = () => {
                 </div>
               </Link>
 
+              <Link
+                to="/settings/general"
+                aria-label="Налаштування"
+                className="hidden sm:flex w-9 h-9 rounded-full items-center justify-center text-ink hover:bg-surface-alt transition-colors"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+
               <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden sm:inline-flex">
                 Вийти
               </Button>
@@ -113,7 +121,7 @@ export const Navbar = () => {
             <Globe className="w-5 h-5" />
           </button>
 
-          {/* Бургер-кнопка — видима нижче lg*/}
+          {/* Бургер-кнопка — видима нижче lg (там, де приховані категорії/пошук/дії) */}
           <button
             type="button"
             aria-label={isMenuOpen ? 'Закрити меню' : 'Відкрити меню'}
@@ -129,7 +137,7 @@ export const Navbar = () => {
       {/* Мобільна шторка (drawer) */}
       {isMenuOpen && (
         <div className="lg:hidden border-t border-border bg-white px-6 sm:px-10 py-4 flex flex-col gap-4">
-          {/* Пошук — дублюється тут тільки для екранів менших за md*/}
+          {/* Пошук — дублюється тут тільки для екранів менших за md, де його немає в шапці */}
           <form onSubmit={handleSearch} className="md:hidden flex">
             <div className="relative w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink" />
@@ -157,7 +165,7 @@ export const Navbar = () => {
             ))}
           </nav>
 
-          {/* Дії — дублюються тут тільки для екранів менших за sm*/}
+          {/* Дії — дублюються тут тільки для екранів менших за sm, де в шапці їх не видно */}
           <div className="sm:hidden flex flex-col gap-2 pt-2 border-t border-border">
             {user ? (
               <>
@@ -167,6 +175,14 @@ export const Navbar = () => {
                   className="px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
                 >
                   Опублікувати
+                </Link>
+                <Link
+                  to="/settings/general"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  Налаштування
                 </Link>
                 <button
                   type="button"
