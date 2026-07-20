@@ -22,12 +22,26 @@ const mockComments: Record<string, Comment[]> = {
 let nextCommentId = 1000
 
 export const commentsHandlers = [
-  // GET /shots/:id/comments/
-  http.get(`${BASE_URL}/shots/:id/comments/`, ({ params }) => {
+  // GET /shots/:id/comments/ — пагіновано, 15 коментарів на сторінку (узгоджено з бекендом)
+  http.get(`${BASE_URL}/shots/:id/comments/`, ({ params, request }) => {
     const id = params.id as string
-    const results = mockComments[id] || []
+    const url = new URL(request.url)
+    const limit = parseInt(url.searchParams.get('limit') || '15', 10)
+    const offset = parseInt(url.searchParams.get('offset') || '0', 10)
+
+    const all = mockComments[id] || []
+    const sliced = all.slice(offset, offset + limit)
+    const nextOffset = offset + limit
+    const hasNext = nextOffset < all.length
+
+    const nextUrl = hasNext ? `${BASE_URL}/shots/${id}/comments/?limit=${limit}&offset=${nextOffset}` : null
+    const previousUrl =
+      offset > 0
+        ? `${BASE_URL}/shots/${id}/comments/?limit=${limit}&offset=${Math.max(0, offset - limit)}`
+        : null
+
     return HttpResponse.json(
-      { count: results.length, next: null, previous: null, results },
+      { count: all.length, next: nextUrl, previous: previousUrl, results: sliced },
       { status: 200 }
     )
   }),

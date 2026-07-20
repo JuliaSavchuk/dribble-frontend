@@ -82,6 +82,7 @@ export const UserProfilePage = () => {
       setLinkCopied(true)
       setTimeout(() => setLinkCopied(false), 2000)
     } catch {
+      // Буфер обміну недоступний (немає дозволу/непідтримуваний браузер) — ігноруємо
     }
   }
 

@@ -43,6 +43,15 @@
   }
 }
 
+/* Мікро-анімація "пружності" для інтерактивних кнопок*/
+@utility btn-pop {
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
 @keyframes bg-pan {
   0% {
     transform: translateX(0);

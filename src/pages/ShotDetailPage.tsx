@@ -2,11 +2,17 @@ import { useParams, Link, useLocation } from 'react-router'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Heart, Bookmark, Trash2, Calendar, Send } from 'lucide-react'
 import { useShotQuery, useDeleteShotMutation, useLikeShotMutation, useSaveShotMutation } from '../hooks/useShots'
-import { useCommentsQuery, useAddCommentMutation, useDeleteCommentMutation } from '../hooks/useComments'
+import {
+  useCommentsQuery,
+  useAddCommentMutation,
+  useDeleteCommentMutation,
+  COMMENTS_PAGE_SIZE,
+} from '../hooks/useComments'
 import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
 import { Avatar } from '../components/ui/Avatar'
 import { CommentsSkeleton } from '../components/ui/CommentsSkeleton'
+import { Pagination } from '../components/ui/Pagination'
 import { cn } from '../utils/cn'
 
 export const ShotDetailPage = () => {
@@ -20,10 +26,22 @@ export const ShotDetailPage = () => {
   const likeMutation = useLikeShotMutation(id!)
   const saveMutation = useSaveShotMutation(id!)
 
-  const { data: commentsData, isLoading: commentsLoading } = useCommentsQuery(id!)
+  const [commentsPage, setCommentsPage] = useState(1)
+  const { data: commentsData, isLoading: commentsLoading } = useCommentsQuery(id!, commentsPage)
   const addCommentMutation = useAddCommentMutation(id!)
   const deleteCommentMutation = useDeleteCommentMutation(id!)
   const [commentText, setCommentText] = useState('')
+
+  const commentsTotalPages = commentsData ? Math.max(1, Math.ceil(commentsData.count / COMMENTS_PAGE_SIZE)) : 1
+
+  // Якщо після видалення коментаря поточна сторінка спорожніла (і це не перша сторінка), повертаємось на попередню сторінку
+  const [prevCommentsData, setPrevCommentsData] = useState(commentsData)
+  if (commentsData !== prevCommentsData) {
+    setPrevCommentsData(commentsData)
+    if (commentsData && commentsData.results.length === 0 && commentsPage > 1) {
+      setCommentsPage((p) => Math.max(1, p - 1))
+    }
+  }
 
   useEffect(() => {
     if (location.hash === '#comments' && shot) {
@@ -35,7 +53,12 @@ export const ShotDetailPage = () => {
     e.preventDefault()
     if (!commentText.trim()) return
     addCommentMutation.mutate(commentText.trim(), {
-      onSuccess: () => setCommentText(''),
+      onSuccess: () => {
+        setCommentText('')
+        // Новий коментар потрапляє в кінець списку — переходимо на останню сторінку, щоб його побачити
+        const newCount = (commentsData?.count ?? 0) + 1
+        setCommentsPage(Math.max(1, Math.ceil(newCount / COMMENTS_PAGE_SIZE)))
+      },
     })
   }
 
@@ -203,6 +226,13 @@ export const ShotDetailPage = () => {
                 </div>
               ))}
             </div>
+
+            <Pagination
+              page={commentsPage}
+              totalPages={commentsTotalPages}
+              onPageChange={setCommentsPage}
+              className="mt-6"
+            />
           </div>
         </div>
 

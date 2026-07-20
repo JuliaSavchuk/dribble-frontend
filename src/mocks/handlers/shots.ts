@@ -10,7 +10,6 @@ const lvivDesigner = MOCK_OTHER_USERS.find((u) => u.username === 'lviv_designer'
 const odesaCreative = MOCK_OTHER_USERS.find((u) => u.username === 'odesa_creative')!
 
 //In-memory мокова база
-
 export const mockShots: Shot[] = [
   {
     id: 101,
@@ -79,6 +78,193 @@ export const mockShots: Shot[] = [
     is_liked: false,
     is_saved: false,
     created_at: '2026-06-14T08:05:00Z',
+  },
+  {
+    id: 105,
+    title: 'AI-Driven UI Analytics Dashboard',
+    description:
+      'A real-time data visualization platform that uses predictive AI models to forecast user behavior and optimize conversion funnels.',  
+    image:
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['ui design', 'dashboard', 'ai integration'],
+    author: toShotAuthor(odesaCreative),
+    likes_count: 89,
+    comments_count: 14,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-06-28T09:15:00Z',
+  },
+  {
+    id: 106,
+    title: 'Spatial Commerce Interface',
+    description:
+      'An experimental interface designed for mixed-reality headsets, exploring gesture-based navigation for digital storefronts.',  
+    image:
+      'https://images.unsplash.com/photo-1626379616459-b2ce1d9decbc?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1626379616459-b2ce1d9decbc?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['spatial computing', 'ux research', 'vr'],
+    author: toShotAuthor(odesaCreative),
+    likes_count: 120,
+    comments_count: 22,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-07-10T14:30:00Z',
+  },
+  {
+    id: 107,
+    title: 'Smart Home Control Ecosystem',
+    description:
+      'A comprehensive tablet interface for managing IoT home automation. Features dynamic grid restructuring, live energy consumption telemetry, and unified ambient lighting presets with granular control.',
+    image:
+      'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['iot dashboard', 'smart home', 'tablet ui'],
+    author: toShotAuthor(lvivDesigner),
+    likes_count: 214,
+    comments_count: 31,
+    is_liked: false,
+    is_saved: true,
+    created_at: '2026-07-02T16:45:00Z',
+  },
+  {
+    id: 108,
+    title: 'DeFi Crypto Wallet & Staking Protocol',
+    description:
+      'Next-gen mobile cryptocurrency terminal introducing gas-optimized transaction pipelines, cross-chain bridging visualization, and clean candlestick financial charting inside a modular interface.',
+    image:
+      'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['crypto', 'fintech', 'mobile ui'],
+    author: toShotAuthor(mockCurrentUser),
+    likes_count: 342,
+    comments_count: 48,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-06-20T11:10:00Z',
+  },
+  {
+    id: 109,
+    title: 'AI Travel Planner & Collaborative Itinerary',
+    description:
+      'Web-based dynamic itinerary builder incorporating real-time geographic routing, collaborative canvas editing for groups, and contextual AI recommendations for local discovery.',
+    image:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['travel app', 'ai automation', 'collaborative workspace'],
+    author: toShotAuthor(odesaCreative),
+    likes_count: 156,
+    comments_count: 19,
+    is_liked: true,
+    is_saved: true,
+    created_at: '2026-07-05T18:20:00Z',
+  },
+  {
+    id: 110,
+    title: 'Biometric Fitness Smartwatch HUD',
+    description:
+      'Circular interface paradigm engineered for outdoor readability. Emphasizes threshold heart-rate indicators, real-time spatial pacing vectors, and high-contrast tactile interaction touchpoints.',
+    image:
+      'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['wearable', 'fitness tracking', 'biometrics'],
+    author: toShotAuthor(lvivDesigner),
+    likes_count: 98,
+    comments_count: 8,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-06-15T07:40:00Z',
+  },
+  {
+    id: 111,
+    title: 'Culinary Studio & Meal Prep Planner',
+    description:
+      'A deeply typographic, image-focused application exploring interactive step-by-step cooking timelines, adaptive micro-scale weight conversion matrixes, and minimalist grocery generation.',
+    image:
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['cooking', 'minimalism', 'ios app'],
+    author: toShotAuthor(mockCurrentUser),
+    likes_count: 189,
+    comments_count: 26,
+    is_liked: false,
+    is_saved: true,
+    created_at: '2026-07-08T12:00:00Z',
+  },
+  {
+    id: 112,
+    title: 'Neomorphic Digital Audio Workstation UI',
+    description:
+      'Desktop software concept utilizing refined tactile skeuomorphism for dial rendering, spatial stereo-field multi-track views, and sub-millisecond hardware monitoring status nodes.',
+    image:
+      'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['audio engineering', 'daw software', 'desktop UI'],
+    author: toShotAuthor(odesaCreative),
+    likes_count: 275,
+    comments_count: 39,
+    is_liked: true,
+    is_saved: false,
+    created_at: '2026-06-25T15:30:00Z',
+  },
+  {
+    id: 113,
+    title: 'B2B Fleet Logistics & Supply Chain Map',
+    description:
+      'High-density GIS telemetry suite tailored for heavy industry operations. Incorporates multi-layered vector terrain maps, atmospheric routing overrides, and automated cargo status notifications.',
+    image:
+      'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['gis analytics', 'logistics', 'enterprise saas'],
+    author: toShotAuthor(lvivDesigner),
+    likes_count: 112,
+    comments_count: 14,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-07-12T10:05:00Z',
+  },
+  {
+    id: 114,
+    title: 'Architectural Monograph & Portfolio Web',
+    description:
+      'Asymmetric layout showcasing full-viewport spatial photography, ultra-clean design documentation indexing systems, and fluid WebGL physics transitions matching structural properties.',
+    image:
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['architecture', 'portfolio website', 'webgl design'],
+    author: toShotAuthor(mockCurrentUser),
+    likes_count: 290,
+    comments_count: 21,
+    is_liked: false,
+    is_saved: true,
+    created_at: '2026-06-18T14:50:00Z',
+  },
+  {
+    id: 115,
+    title: 'AI Language Acquisition Chat Assistant',
+    description:
+      'Experimental conversational UI incorporating dynamic phonetic analysis modules, interactive multi-dialect transcription nodes, and real-time morphological structural maps.',
+    image:
+      'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80',
+    preview:
+      'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=400&h=300&q=80',
+    tags: ['conversational ui', 'ai LLM', 'linguistics'],
+    author: toShotAuthor(odesaCreative),
+    likes_count: 164,
+    comments_count: 18,
+    is_liked: false,
+    is_saved: false,
+    created_at: '2026-07-01T08:55:00Z',
   },
 ]
 

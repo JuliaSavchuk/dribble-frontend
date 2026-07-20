@@ -16,12 +16,7 @@ export const shotsApi = {
 
   getShot: (id: string | number) => api.get<Shot>(`/shots/${id}/`),
 
-  createShot: (formData: FormData) =>
-    api.post<Shot>('/shots/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
+  createShot: (formData: FormData) => api.post<Shot>('/shots/', formData),
 
   updateShot: (id: string | number, data: Partial<Pick<Shot, 'title' | 'description'>>) =>
     api.patch<Shot>(`/shots/${id}/`, data),

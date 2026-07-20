@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { ChevronDown, Search, Globe } from 'lucide-react'
+import { ChevronDown, Search, Globe, Menu, X } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { Button } from '../ui/Button'
 import { Avatar } from '../ui/Avatar'
@@ -17,22 +17,27 @@ export const Navbar = () => {
   const logout = useAuthStore((s) => s.logout)
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
+    setIsMenuOpen(false)
     navigate('/')
   }
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault()
-    if (search.trim()) navigate(`/search?q=${encodeURIComponent(search.trim())}`)
+    if (search.trim()) {
+      setIsMenuOpen(false)
+      navigate(`/search?q=${encodeURIComponent(search.trim())}`)
+    }
   }
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border font-app">
       <div className="max-w-[110rem] mx-auto px-6 sm:px-10 h-20 flex items-center gap-6">
         {/* Логотип */}
-        <Link to="/" className="flex items-center gap-1.5 shrink-0">
+        <Link to="/" className="flex items-center gap-1.5 shrink-0" onClick={() => setIsMenuOpen(false)}>
           <img src={logo} alt="" className="h-9 w-9" draggable={false} />
           <span className="font-script text-2xl text-ink -mt-1">Voxel</span>
         </Link>
@@ -82,16 +87,19 @@ export const Navbar = () => {
                 </div>
               </Link>
 
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden sm:inline-flex">
                 Вийти
               </Button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-sm font-semibold text-ink hover:text-primary transition-colors px-2">
+              <Link
+                to="/login"
+                className="hidden sm:block text-sm font-semibold text-ink hover:text-primary transition-colors px-2"
+              >
                 Log in
               </Link>
-              <Link to="/register">
+              <Link to="/register" className="hidden sm:block">
                 <Button size="sm">Sign up</Button>
               </Link>
             </>
@@ -104,8 +112,97 @@ export const Navbar = () => {
           >
             <Globe className="w-5 h-5" />
           </button>
+
+          {/* Бургер-кнопка — видима нижче lg*/}
+          <button
+            type="button"
+            aria-label={isMenuOpen ? 'Закрити меню' : 'Відкрити меню'}
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen((v) => !v)}
+            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-full text-ink hover:bg-surface-alt transition-colors btn-pop cursor-pointer"
+          >
+            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Мобільна шторка (drawer) */}
+      {isMenuOpen && (
+        <div className="lg:hidden border-t border-border bg-white px-6 sm:px-10 py-4 flex flex-col gap-4">
+          {/* Пошук — дублюється тут тільки для екранів менших за md*/}
+          <form onSubmit={handleSearch} className="md:hidden flex">
+            <div className="relative w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink" />
+              <input
+                type="text"
+                placeholder="Find a style"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-full border-2 border-ink bg-white pl-11 pr-4 py-2.5 text-sm text-ink placeholder:text-[#3E3E3E] focus:outline-none"
+              />
+            </div>
+          </form>
+
+          {/* Категорії / спільнота / робота */}
+          <nav className="flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-1 px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Дії — дублюються тут тільки для екранів менших за sm*/}
+          <div className="sm:hidden flex flex-col gap-2 pt-2 border-t border-border">
+            {user ? (
+              <>
+                <Link
+                  to="/upload"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
+                >
+                  Опублікувати
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors cursor-pointer"
+                >
+                  Вийти
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link to="/register" onClick={() => setIsMenuOpen(false)}>
+                  <Button size="sm" className="w-full">
+                    Sign up
+                  </Button>
+                </Link>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-ink hover:bg-surface-alt transition-colors cursor-pointer"
+            >
+              <Globe className="w-4 h-4" />
+              Мова
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

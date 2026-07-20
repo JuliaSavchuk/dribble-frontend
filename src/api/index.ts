@@ -13,6 +13,17 @@ api.interceptors.request.use((config) => {
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
+  if (config.data instanceof FormData && config.headers) {
+    if (typeof config.headers.delete === 'function') {
+      config.headers.delete('Content-Type')
+      config.headers.delete('content-type')
+    } else {
+      delete config.headers['Content-Type']
+      delete config.headers['content-type']
+    }
+  }
+
   return config
 })
 
@@ -70,12 +81,10 @@ export const authApi = {
   getProfile: () =>
     api.get('/auth/profile/'),
 
-  updateProfile: (data: FormData | Record<string, unknown>) =>
-  api.patch('/auth/profile/', data, {
-    headers: {
-      'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
-    },
-  }),
+  updateProfile: (data: FormData | Record<string, unknown>) => {
+    const headers = data instanceof FormData ? {} : { 'Content-Type': 'application/json' }
+    return api.patch('/auth/profile/', data, { headers })
+  },
 
   // бекенд-ендпоінт відновлення пароля
   requestPasswordReset: (email: string) =>

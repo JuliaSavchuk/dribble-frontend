@@ -1,14 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { commentsApi } from '../api/comments'
 
-export const useCommentsQuery = (shotId: string | number) => {
+//коментарі повертаються сторінками по 15 штук.
+export const COMMENTS_PAGE_SIZE = 15
+
+export const useCommentsQuery = (shotId: string | number, page: number = 1) => {
   return useQuery({
-    queryKey: ['comments', shotId],
+    queryKey: ['comments', shotId, page],
     queryFn: async () => {
-      const response = await commentsApi.getComments(shotId)
+      const response = await commentsApi.getComments(shotId, {
+        limit: COMMENTS_PAGE_SIZE,
+        offset: (page - 1) * COMMENTS_PAGE_SIZE,
+      })
       return response.data
     },
     enabled: !!shotId,
+    placeholderData: keepPreviousData,
   })
 }
 
