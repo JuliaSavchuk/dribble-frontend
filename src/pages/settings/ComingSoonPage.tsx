@@ -15,7 +15,7 @@ export const ComingSoonPage = () => {
         <div>
           <p className="text-lg font-semibold text-black">Розділ «{title}» у розробці</p>
           <p className="text-sm text-black/38 mt-1 max-w-sm">
-            Ця сторінка ще не описана у API контракті бекенду. Ми додамо її, щойно з'явиться погоджений ендпоінт.
+            Ця сторінка ще не створена. Ми додамо її пізніше.
           </p>
         </div>
       </div>
