@@ -2,8 +2,7 @@ import { NavLink } from 'react-router'
 import { cn } from '../../utils/cn'
 import { SETTINGS_NAV_ITEMS } from '../../constants/settingsNav'
 
-// Бокова панель розділу Settings — використовується на кожній сторінці
-// налаштувань, щоб не дублювати список пунктів меню в кожному файлі.
+// Бокова панель розділу Settings — використовується на кожній сторінці налаштувань, щоб не дублювати список пунктів меню в кожному файлі.
 export const SettingsSidebar = () => {
   return (
     <nav className="flex flex-col gap-6 w-full md:w-57.5 shrink-0" aria-label="Settings">

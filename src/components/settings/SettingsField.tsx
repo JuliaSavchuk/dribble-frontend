@@ -53,7 +53,6 @@ interface SettingsTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaEleme
   maxLength?: number
 }
 
-// Textarea-версія того ж стилю, з лічильником символів (напр. Bio 0/1024)
 export const SettingsTextarea = forwardRef<HTMLTextAreaElement, SettingsTextareaProps>(
   ({ label, hint, maxLength, className, id, value, ...props }, ref) => {
     const inputId = id || label.toLowerCase().replace(/\s+/g, '-')

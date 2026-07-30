@@ -24,7 +24,7 @@ export const AuthButton = ({
         'flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold',
         'transition-colors duration-200 cursor-pointer select-none',
         active
-          ? 'bg-voxel-black text-voxel-white hover:bg-voxel-black/85'
+          ? 'bg-voxel-cyan-dark text-voxel-white hover:bg-voxel-cyan-dark-hover'
           : 'bg-voxel-gray text-voxel-white cursor-default',
         isLoading && 'cursor-wait',
         className

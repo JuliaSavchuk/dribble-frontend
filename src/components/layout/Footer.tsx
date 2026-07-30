@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import logo from '../../assets/voxel-logo.png'
+import { Logo } from '../ui/Logo'
 
 const FOR_DESIGNERS_LINKS = ['Blog', 'About', 'Support']
 
@@ -13,9 +13,8 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
           {/* Логотип + навігація "For designers" */}
           <div className="flex flex-col gap-8">
-            <Link to="/" className="flex items-center gap-2">
-              <img src={logo} alt="" className="h-8 w-8" draggable={false} />
-              <span className="font-script text-2xl text-ink">Voxel</span>
+            <Link to="/">
+              <Logo className="gap-2" imgClassName="h-8 w-8" textClassName="text-ink" />
             </Link>
 
             <nav className="flex flex-wrap items-center gap-6">

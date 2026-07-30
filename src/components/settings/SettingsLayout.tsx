@@ -9,10 +9,7 @@ interface SettingsLayoutProps {
   children: ReactNode
 }
 
-// Спільна "рамка" для всіх сторінок розділу Settings: заголовок з аватаром +
-// боковою панеллю. Винесено в окремий компонент, щоб кожна сторінка
-// налаштувань (General/Edit Profile/Password/Company/...) не дублювала
-// однаковий header і <SettingsSidebar />.
+// Спільна "рамка" для всіх сторінок розділу Settings: заголовок з аватаром + боковою панеллю.
 export const SettingsLayout = ({ title, children }: SettingsLayoutProps) => {
   const user = useAuthStore((s) => s.user)
   const displayName = user?.username ?? ''

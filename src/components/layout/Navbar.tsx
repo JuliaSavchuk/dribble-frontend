@@ -4,7 +4,7 @@ import { ChevronDown, Search, Globe, Menu, X, Settings } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { Button } from '../ui/Button'
 import { Avatar } from '../ui/Avatar'
-import logo from '../../assets/voxel-logo.png'
+import { Logo } from '../ui/Logo'
 
 const NAV_ITEMS = [
   { label: 'Categories', to: '/feed' },
@@ -37,9 +37,8 @@ export const Navbar = () => {
     <header className="sticky top-0 z-50 bg-white border-b border-border font-app">
       <div className="max-w-[110rem] mx-auto px-6 sm:px-10 h-20 flex items-center gap-6">
         {/* Логотип */}
-        <Link to="/" className="flex items-center gap-1.5 shrink-0" onClick={() => setIsMenuOpen(false)}>
-          <img src={logo} alt="" className="h-9 w-9" draggable={false} />
-          <span className="font-script text-2xl text-ink -mt-1">Voxel</span>
+        <Link to="/" className="shrink-0" onClick={() => setIsMenuOpen(false)}>
+          <Logo className="gap-1.5" imgClassName="h-9 w-9" textClassName="text-ink -mt-1" />
         </Link>
 
         {/* Категорії / спільнота / робота */}

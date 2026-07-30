@@ -1,4 +1,4 @@
-import logo from '../../assets/voxel-logo.png'
+import { Logo } from '../ui/Logo'
 import { cn } from '../../utils/cn'
 
 interface VoxelLogoProps {
@@ -7,9 +7,10 @@ interface VoxelLogoProps {
 
 export const VoxelLogo = ({ className }: VoxelLogoProps) => {
   return (
-    <div className={cn('flex flex-col items-center', className)}>
-      <img src={logo} alt="" className="h-12 w-auto select-none" draggable={false} />
-      <span className="font-script text-2xl text-voxel-black -mt-1">Voxel</span>
-    </div>
+    <Logo
+      className={cn('flex-col items-center', className)}
+      imgClassName="h-12 w-auto"
+      textClassName="text-voxel-black -mt-1"
+    />
   )
 }
