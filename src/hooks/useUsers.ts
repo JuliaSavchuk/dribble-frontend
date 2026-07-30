@@ -22,7 +22,7 @@ export const useFollowMutation = (username: string) => {
     mutationFn: () => usersApi.follow(username),
     onSuccess: ({ data }) => {
       queryClient.setQueryData<PublicProfile | undefined>(['user', username], (prev) =>
-        prev ? { ...prev, is_following: data.is_following, followers_count: data.followers_count } : prev
+        prev ? { ...prev, is_following: data.following, followers_count: data.followers_count } : prev
       )
     },
   })

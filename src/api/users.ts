@@ -5,8 +5,9 @@ import type { FollowUser, PaginatedResponse, PublicProfile, Shot } from '../type
 export const usersApi = {
   getPublicProfile: (username: string) => api.get<PublicProfile>(`/users/${username}/`),
 
+  // Бекенд повертає поле `following` (а не `is_following`, як у PublicProfile). Виправлено невідповідність.
   follow: (username: string) =>
-    api.post<{ is_following: boolean; followers_count: number }>(`/users/${username}/follow/`),
+    api.post<{ following: boolean; followers_count: number }>(`/users/${username}/follow/`),
 
   // Вподобані роботи користувача
   getLikedShots: (username: string, params?: { limit?: number; offset?: number }) =>

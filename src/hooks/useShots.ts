@@ -81,7 +81,7 @@ export const useLikeShotMutation = (id: string | number) => {
     mutationFn: () => shotsApi.likeShot(id),
     onSuccess: ({ data }) => {
       queryClient.setQueryData<Shot | undefined>(['shot', id], (prev) =>
-        prev ? { ...prev, is_liked: data.is_liked, likes_count: data.likes_count } : prev
+        prev ? { ...prev, is_liked: data.liked, likes_count: data.likes_count } : prev
       )
       queryClient.invalidateQueries({ queryKey: ['feed'] })
       queryClient.invalidateQueries({ queryKey: ['likedShots'] })
@@ -96,7 +96,7 @@ export const useSaveShotMutation = (id: string | number) => {
     mutationFn: () => shotsApi.saveShot(id),
     onSuccess: ({ data }) => {
       queryClient.setQueryData<Shot | undefined>(['shot', id], (prev) =>
-        prev ? { ...prev, is_saved: data.is_saved } : prev
+        prev ? { ...prev, is_saved: data.saved } : prev
       )
       queryClient.invalidateQueries({ queryKey: ['feed'] })
     },
