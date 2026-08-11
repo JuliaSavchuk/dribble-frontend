@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ChevronDown, Search, Globe, Menu, X, Settings } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
+import { useProfile } from '../../hooks/useAuth'
 import { Button } from '../ui/Button'
 import { Avatar } from '../ui/Avatar'
 import { Logo } from '../ui/Logo'
@@ -18,6 +19,8 @@ export const Navbar = () => {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data: profile } = useProfile()
+  const avatarSrc = profile?.avatar ?? user?.avatar
 
   const handleLogout = () => {
     logout()
@@ -81,7 +84,7 @@ export const Navbar = () => {
               </Link>
               <Link to={`/users/${user.username}`}>
                 <div className="flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-surface-alt transition-colors">
-                  <Avatar src={user.avatar} username={user.username} className="w-9 h-9" textClassName="text-xs" />
+                  <Avatar src={avatarSrc} username={user.username} className="w-9 h-9" textClassName="text-xs" />
                   <span className="hidden sm:block text-sm font-semibold text-ink">{user.username}</span>
                 </div>
               </Link>

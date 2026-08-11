@@ -121,7 +121,7 @@ export const ShotDetailPage = () => {
           <Button
             variant="secondary"
             className={cn('flex-1 md:flex-initial', shot.is_liked && 'border-primary text-primary')}
-            onClick={() => isAuthed && likeMutation.mutate()}
+            onClick={() => isAuthed && likeMutation.mutate({ is_liked: shot.is_liked, likes_count: shot.likes_count })}
             disabled={!isAuthed || likeMutation.isPending}
           >
             <Heart className="w-4 h-4" fill={shot.is_liked ? 'currentColor' : 'none'} />

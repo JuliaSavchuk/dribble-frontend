@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useAuthStore } from '../../store/authStore'
+import { useProfile } from '../../hooks/useAuth'
 import { Avatar } from '../ui/Avatar'
 import { SettingsSidebar } from './SettingsSidebar'
 
@@ -14,12 +15,18 @@ export const SettingsLayout = ({ title, children }: SettingsLayoutProps) => {
   const user = useAuthStore((s) => s.user)
   const displayName = user?.username ?? ''
 
+  // Аналогічно до Navbar.tsx: user.avatar з persisted-стору може містити
+  // прострочений підписаний URL з Cloudflare R2. useProfile() дає свіжіше
+  // значення (оновлюється щонайбільше раз на 5 хв).
+  const { data: profile } = useProfile()
+  const avatarSrc = profile?.avatar ?? user?.avatar
+
   return (
     <div className="max-w-[1920px] mx-auto px-6 sm:px-16 lg:px-36 pt-14 sm:pt-20 pb-20">
       {/* Заголовок */}
       <div className="flex items-center gap-6 mb-12 sm:mb-16">
         <Avatar
-          src={user?.avatar}
+          src={avatarSrc}
           username={user?.username ?? '?'}
           className="w-16 h-16 sm:w-23.5 sm:h-23.5 border border-border"
           textClassName="text-2xl sm:text-3xl"

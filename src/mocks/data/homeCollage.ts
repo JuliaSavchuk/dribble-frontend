@@ -10,7 +10,7 @@ export interface HomeCollageTile {
 
 export const HOME_COLLAGE: HomeCollageTile[] = [
   {
-    image: 'https://images.unsplash.com/photo-1596466596120-2d8173f3e19c?auto=format&fit=crop&w=400&q=80',
+    image: 'https://picsum.photos/seed/voxel-tattoo/400/400',
     label: 'Tattoo',
     count: '3k',
     className: 'col-span-1 row-span-1',

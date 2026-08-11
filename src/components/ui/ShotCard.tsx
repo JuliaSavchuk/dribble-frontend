@@ -36,7 +36,7 @@ export const ShotCard = ({ shot }: ShotCardProps) => {
     e.preventDefault()
     e.stopPropagation()
     if (!isAuthed || likeMutation.isPending) return
-    likeMutation.mutate()
+    likeMutation.mutate({ is_liked: shot.is_liked, likes_count: shot.likes_count })
   }
 
   const handleSave = (e: React.MouseEvent) => {

@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { useNavigate } from 'react-router'
 import { shotsApi, type GetShotsParams } from '../api/shots'
 import type { PaginatedResponse, Shot } from '../types'
+import { patchShotEverywhere } from '../utils/shotCache'
 
 //useFeedQuery 
 export const useFeedQuery = (
@@ -73,17 +74,21 @@ export const useDeleteShotMutation = () => {
   })
 }
 
-// useLikeShotMutation / useSaveShotMutation 
+// useLikeShotMutation / useSaveShotMutation
 export const useLikeShotMutation = (id: string | number) => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: () => shotsApi.likeShot(id),
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData<Shot | undefined>(['shot', id], (prev) =>
-        prev ? { ...prev, is_liked: data.liked, likes_count: data.likes_count } : prev
-      )
-      queryClient.invalidateQueries({ queryKey: ['feed'] })
+    // currentShot — стан лічильника ДО кліку (передається з компонента,
+    // напр. likeMutation.mutate({ is_liked: shot.is_liked, likes_count: shot.likes_count })).
+    onSuccess: ({ data }, currentShot?: Pick<Shot, 'is_liked' | 'likes_count'>) => {
+      const likes_count = currentShot
+        ? Math.max(0, currentShot.likes_count + (data.liked ? 1 : -1))
+        : data.likes_count
+      patchShotEverywhere(queryClient, id, { is_liked: data.liked, likes_count })
+      // /api/users/:username/liked/ на бекенді не кешується, тож фоновий
+      // рефетч тут безпечний і підчищає крайові випадки з пагінацією.
       queryClient.invalidateQueries({ queryKey: ['likedShots'] })
     },
   })
@@ -95,10 +100,7 @@ export const useSaveShotMutation = (id: string | number) => {
   return useMutation({
     mutationFn: () => shotsApi.saveShot(id),
     onSuccess: ({ data }) => {
-      queryClient.setQueryData<Shot | undefined>(['shot', id], (prev) =>
-        prev ? { ...prev, is_saved: data.saved } : prev
-      )
-      queryClient.invalidateQueries({ queryKey: ['feed'] })
+      patchShotEverywhere(queryClient, id, { is_saved: data.saved })
     },
   })
 }
