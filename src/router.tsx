@@ -107,28 +107,31 @@ export const router = createBrowserRouter([
           {
             path: '/settings/company',
             lazy: () =>
-              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+              import('./pages/settings/CompanyPage').then((m) => ({ Component: m.CompanyPage })),
           },
-          
           {
             path: '/settings/payouts',
             lazy: () =>
-              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+              import('./pages/settings/PayoutsPage').then((m) => ({ Component: m.PayoutsPage })),
           },
           {
             path: '/settings/teams',
             lazy: () =>
-              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+              import('./pages/settings/TeamsPage').then((m) => ({ Component: m.TeamsPage })),
           },
           {
             path: '/settings/notifications',
             lazy: () =>
-              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+              import('./pages/settings/NotificationsPage').then((m) => ({
+                Component: m.NotificationsPage,
+              })),
           },
           {
             path: '/settings/privacy-security',
             lazy: () =>
-              import('./pages/settings/ComingSoonPage').then((m) => ({ Component: m.ComingSoonPage })),
+              import('./pages/settings/PrivacySecurityPage').then((m) => ({
+                Component: m.PrivacySecurityPage,
+              })),
           },
         ],
       },

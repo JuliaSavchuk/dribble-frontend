@@ -159,6 +159,15 @@ export interface SearchResponse {
   }
 }
 
+// Сира відповідь бекенду GET /api/search/ (apps/shots/views.py: SearchView).
+// На відміну від очікуваного SearchResponse, бекенд повертає `shots` та
+// `users` простими масивами, без обгортки { count, results }. Нормалізація
+// до SearchResponse відбувається у хуку useSearchQuery.
+export interface RawSearchResponse {
+  shots: Shot[] | PaginatedResponse<Shot>
+  users: SearchUserResult[] | PaginatedResponse<SearchUserResult>
+}
+
 //Pagination
 
 export interface PaginatedResponse<T> {

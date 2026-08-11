@@ -42,10 +42,16 @@ api.interceptors.response.use(
             `${api.defaults.baseURL}/auth/token/refresh/`,
             { refresh }
           )
+          // Бекенд налаштований з ROTATE_REFRESH_TOKENS=True +
+          // BLACKLIST_AFTER_ROTATION=True (config/settings.py): кожен рефреш
+          // видає НОВУ пару токенів, а старий refresh потрапляє в blacklist.
+          // Тому обов'язково зберігаємо data.refresh, а не переперевикористовуємо
+          // старий — інакше наступний silent-refresh отримає 401
+          // "Token is blacklisted" і користувача розлогінить передчасно.
           useAuthStore.getState().setAuth(
             useAuthStore.getState().user!,
             data.access,
-            refresh
+            data.refresh ?? refresh
           )
           originalRequest.headers.Authorization = `Bearer ${data.access}`
           return api(originalRequest)

@@ -1,5 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usersApi } from '../api/users'
+import { normalizePaginated } from '../utils/pagination'
 import type { PaginatedResponse, PublicProfile, Shot } from '../types'
 
 // Профіль користувача (GET /api/users/:username/)
@@ -34,7 +35,10 @@ export const useLikedShotsQuery = (username: string | undefined) => {
     queryKey: ['likedShots', username],
     queryFn: async ({ pageParam }) => {
       const response = await usersApi.getLikedShots(username!, { offset: pageParam, limit: 12 })
-      return response.data
+      // BUG-8 (TESTING_PLAN.md): бекенд наразі повертає простий масив без
+      // пагінації — нормалізуємо, щоб вкладка "Liked" у UserProfilePage.tsx
+      // не падала на page.results.
+      return normalizePaginated(response.data)
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage: PaginatedResponse<Shot>) => {

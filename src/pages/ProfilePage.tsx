@@ -7,6 +7,7 @@ import { Input } from '../components/ui/Input'
 import { Alert } from '../components/ui/Alert'
 import { Spinner } from '../components/ui/Spinner'
 import { getErrorMessage } from '../utils/errors'
+import { getAvatarColor, getAvatarInitial } from '../utils/avatarColor'
 import { TwitterIcon, InstagramIcon, LinkedInIcon, WebIcon } from '../components/ui/SocialIcons'
 
 //Stat Card
@@ -68,6 +69,10 @@ export const ProfilePage = () => {
   const [linkedin, setLinkedin] = useState('')
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  // Посилання на фото з бекенду може бути "мертвим" (як-от Unsplash-посилання
+  // у мокових даних) — без цього прапорця замість заглушки з ініціалом
+  // браузер показував би стандартну зламану іконку зображення.
+  const [avatarLoadError, setAvatarLoadError] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
 
   //Password change form state
@@ -78,6 +83,17 @@ export const ProfilePage = () => {
   const [passwordSuccess, setPasswordSuccess] = useState('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Якщо avatarPreview змінився (нове завантажене фото або профіль
+  // допідвантажився з бекенду) — скидаємо прапорець помилки завантаження.
+  // Порівнюємо з попереднім значенням прямо під час рендеру (той самий
+  // патерн, що й у components/ui/Avatar.tsx), а не в useEffect, щоб
+  // уникнути зайвого проміжного рендеру зі старим станом.
+  const [prevAvatarPreview, setPrevAvatarPreview] = useState(avatarPreview)
+  if (avatarPreview !== prevAvatarPreview) {
+    setPrevAvatarPreview(avatarPreview)
+    setAvatarLoadError(false)
+  }
 
   //Синхронізація форми з даними профілю — виконується один раз, коли профіль щойно завантажився
   const [hydratedForId, setHydratedForId] = useState<number | null>(null)
@@ -167,16 +183,23 @@ export const ProfilePage = () => {
         <div className="px-8 pb-6">
           <div className="flex items-end justify-between -mt-12 mb-4">
             <div className="relative">
-              {avatarPreview ? (
+              {avatarPreview && !avatarLoadError ? (
                 <img
                   src={avatarPreview}
                   alt={profile?.username}
+                  onError={() => setAvatarLoadError(true)}
                   className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-2xl bg-primary/10 border-4 border-white flex items-center justify-center">
-                  <span className="text-3xl font-extrabold text-primary">
-                    {profile?.username?.charAt(0).toUpperCase() ?? '?'}
+                <div
+                  className="w-24 h-24 rounded-2xl border-4 border-white flex items-center justify-center"
+                  style={{ backgroundColor: getAvatarColor(profile?.username).bg }}
+                >
+                  <span
+                    className="text-3xl font-extrabold"
+                    style={{ color: getAvatarColor(profile?.username).text }}
+                  >
+                    {getAvatarInitial(profile?.username)}
                   </span>
                 </div>
               )}

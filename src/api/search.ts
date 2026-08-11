@@ -1,5 +1,5 @@
 import { api } from './index'
-import type { SearchResponse } from '../types'
+import type { RawSearchResponse } from '../types'
 
 export interface SearchParams {
   q: string
@@ -9,6 +9,8 @@ export interface SearchParams {
 }
 
 // Search API: GET /api/search/?q=
+// apps/shots/views.py: SearchView повертає `shots`/`users` простими масивами
+// (не пагіновано) — нормалізація до SearchResponse відбувається у useSearchQuery.
 export const searchApi = {
-  search: (params: SearchParams) => api.get<SearchResponse>('/search/', { params }),
+  search: (params: SearchParams) => api.get<RawSearchResponse>('/search/', { params }),
 }
