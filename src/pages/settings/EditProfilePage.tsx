@@ -6,8 +6,10 @@ import { Avatar } from '../../components/ui/Avatar'
 import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
 import { Spinner } from '../../components/ui/Spinner'
+import { useT } from '../../i18n'
 
 export const EditProfilePage = () => {
+  const t = useT()
   const { data: profile, isLoading } = useProfile()
   const updateMutation = useUpdateProfile()
 
@@ -40,7 +42,7 @@ export const EditProfilePage = () => {
       {
         onSuccess: () => {
           setAvatarFile(null)
-          setSuccessMsg('Профіль успішно оновлено!')
+          setSuccessMsg(t.settings.editProfile.updated)
           setTimeout(() => setSuccessMsg(''), 4000)
         },
       }
@@ -49,7 +51,7 @@ export const EditProfilePage = () => {
 
   if (isLoading) {
     return (
-      <SettingsLayout title="Edit Profile">
+      <SettingsLayout title={t.settings.editProfile.title}>
         <div className="py-20 flex justify-center">
           <Spinner size="lg" />
         </div>
@@ -58,11 +60,11 @@ export const EditProfilePage = () => {
   }
 
   return (
-    <SettingsLayout title="Edit Profile">
+    <SettingsLayout title={t.settings.editProfile.title}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-9">
         {successMsg && <Alert type="success" message={successMsg} />}
         {updateMutation.isError && (
-          <Alert type="error" message="Не вдалося зберегти. Спробуйте ще раз." />
+          <Alert type="error" message={t.settings.editProfile.saveFailed} />
         )}
 
         {/* Аватар */}
@@ -80,13 +82,13 @@ export const EditProfilePage = () => {
                 onClick={() => fileInputRef.current?.click()}
                 className="px-5 py-1.5 rounded-md bg-black/4 text-sm font-semibold text-black hover:bg-black/8 transition-colors cursor-pointer"
               >
-                Select image
+                {t.settings.editProfile.selectImage}
               </button>
               <span className="text-sm font-semibold text-black">
-                {avatarFile ? avatarFile.name : 'No image selected'}
+                {avatarFile ? avatarFile.name : t.settings.editProfile.noImageSelected}
               </span>
             </div>
-            <p className="text-sm font-semibold text-black/38">JPG, GIF or PNG, Max size of 5mb</p>
+            <p className="text-sm font-semibold text-black/38">{t.settings.editProfile.logoFormatHint}</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -98,12 +100,12 @@ export const EditProfilePage = () => {
         </div>
 
         <SettingsTextarea
-          label="Bio"
-          placeholder="Brief description for your profile"
+          label={t.settings.editProfile.bio}
+          placeholder={t.settings.editProfile.bioPlaceholder}
           maxLength={1024}
           value={bio}
           onChange={(e) => setBio(e.target.value)}
-          hint="Brief description for your profile."
+          hint={t.settings.editProfile.bioHint}
         />
 
         <div className="flex justify-end">
@@ -113,7 +115,7 @@ export const EditProfilePage = () => {
             isLoading={updateMutation.isPending}
             disabled={updateMutation.isPending}
           >
-            Save Profile
+            {t.settings.editProfile.saveProfile}
           </Button>
         </div>
       </form>

@@ -30,6 +30,11 @@ export const patchShotEverywhere = (
     prev ? { ...prev, ...patch } : prev
   )
 
+  queryClient.setQueriesData<PaginatedResponse<Shot>>({ queryKey: ['popularShots'] }, (data) => {
+    if (!data) return data
+    return patchPage(data, id, patch)
+  })
+
   queryClient.setQueriesData<InfiniteData<PaginatedResponse<Shot>>>(
     { queryKey: ['feed'] },
     (data) => {

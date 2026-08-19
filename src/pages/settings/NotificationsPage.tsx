@@ -4,11 +4,10 @@ import { NotificationRow, NotificationSection } from '../../components/settings/
 import { Toggle } from '../../components/ui/Toggle'
 import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
+import { useT } from '../../i18n'
 
-// Бекенд не має моделі "notification preferences" — весь стан живе лише
-// в React-компоненті на час сесії. "Save change" чесно повідомляє про
-// відсутність підключення до сервера, а не імітує збереження.
 export const NotificationsPage = () => {
+  const t = useT()
   const [browserEnabled, setBrowserEnabled] = useState(false)
   const [notice, setNotice] = useState('')
 
@@ -58,58 +57,56 @@ export const NotificationsPage = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    setNotice(
-      'Розділ «Notifications» ще не підключений до бекенду — налаштування зберігаються лише локально, в межах цього сеансу.'
-    )
+    setNotice(t.settings.notifications.notImplemented)
   }
 
   return (
-    <SettingsLayout title="Notifications">
+    <SettingsLayout title={t.settings.notifications.title}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         {notice && <Alert type="info" message={notice} />}
 
         {/* Browser Notifications */}
         <div className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-black">Browser Notifications</h2>
+          <h2 className="text-xl font-semibold text-black">{t.settings.notifications.browserSection}</h2>
           <div className="flex items-center gap-4">
             <Toggle
               checked={browserEnabled}
               onChange={setBrowserEnabled}
-              label="Enable Desktop Browser Notifications"
+              label={t.settings.notifications.enableBrowser}
             />
-            <span className="text-base text-black">Enable Desktop Browser Notifications</span>
+            <span className="text-base text-black">{t.settings.notifications.enableBrowser}</span>
           </div>
         </div>
 
         {/* Other Email Notifications */}
         <div className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-black">Other Email Notifications</h2>
+          <h2 className="text-xl font-semibold text-black">{t.settings.notifications.emailSection}</h2>
           <NotificationSection
-            title="Alert"
+            title={t.settings.notifications.alertGroup}
             allChecked={emailAllChecked}
             onToggleAll={toggleAllEmail}
           >
             <NotificationRow
-              label="Communications"
-              description="Get Voxel news, announcements, and product updates"
+              label={t.settings.notifications.communications}
+              description={t.settings.notifications.communicationsDescription}
               checked={emailPrefs.communications}
               onChange={(v) => setEmailPrefs((p) => ({ ...p, communications: v }))}
             />
             <NotificationRow
-              label="Account Activity"
-              description="Get important notifications about you or activity you've missed"
+              label={t.settings.notifications.accountActivity}
+              description={t.settings.notifications.accountActivityDescription}
               checked={emailPrefs.accountActivity}
               onChange={(v) => setEmailPrefs((p) => ({ ...p, accountActivity: v }))}
             />
             <NotificationRow
-              label="Meetups Near You"
-              description="Get an email when a Voxel Meetup is posted close to my location"
+              label={t.settings.notifications.meetupsNearYou}
+              description={t.settings.notifications.meetupsNearYouDescription}
               checked={emailPrefs.meetupsNearYou}
               onChange={(v) => setEmailPrefs((p) => ({ ...p, meetupsNearYou: v }))}
             />
             <NotificationRow
-              label="Marketing Updates"
-              description="Stay informed about our latest products, promotions, and special offers"
+              label={t.settings.notifications.marketingUpdates}
+              description={t.settings.notifications.marketingUpdatesDescription}
               checked={emailPrefs.marketingUpdates}
               onChange={(v) => setEmailPrefs((p) => ({ ...p, marketingUpdates: v }))}
               isLast
@@ -120,43 +117,43 @@ export const NotificationsPage = () => {
         {/* Account Activity */}
         <div className="flex flex-col gap-6">
           <NotificationSection
-            title="Account Activity"
+            title={t.settings.notifications.accountActivityGroup}
             allChecked={activityAllChecked}
             onToggleAll={toggleAllActivity}
           >
             <NotificationRow
-              label="Collaborator invite"
-              description="Someone asks me to be a collaborator on one of their shots"
+              label={t.settings.notifications.collaboratorInvite}
+              description={t.settings.notifications.collaboratorInviteDescription}
               checked={activityPrefs.collaboratorInvite}
               onChange={(v) => setActivityPrefs((p) => ({ ...p, collaboratorInvite: v }))}
             />
             <NotificationRow
-              label="Comments"
-              description="Someone comments on one of my shots"
+              label={t.settings.notifications.comments}
+              description={t.settings.notifications.commentsDescription}
               checked={activityPrefs.comments}
               onChange={(v) => setActivityPrefs((p) => ({ ...p, comments: v }))}
             />
             <NotificationRow
-              label="Mentions"
-              description="Someone mentions me"
+              label={t.settings.notifications.mentions}
+              description={t.settings.notifications.mentionsDescription}
               checked={activityPrefs.mentions}
               onChange={(v) => setActivityPrefs((p) => ({ ...p, mentions: v }))}
             />
             <NotificationRow
-              label="New followers"
-              description="Anyone follows me"
+              label={t.settings.notifications.newFollowers}
+              description={t.settings.notifications.newFollowersDescription}
               checked={activityPrefs.follows}
               onChange={(v) => setActivityPrefs((p) => ({ ...p, follows: v }))}
             />
             <NotificationRow
-              label="Invitation accepted"
-              description="Someone accepts my invitation"
+              label={t.settings.notifications.invitationAccepted}
+              description={t.settings.notifications.invitationAcceptedDescription}
               checked={activityPrefs.invitationAccepted}
               onChange={(v) => setActivityPrefs((p) => ({ ...p, invitationAccepted: v }))}
             />
             <NotificationRow
-              label="Likes"
-              description="Someone likes one of my shots"
+              label={t.settings.notifications.likes}
+              description={t.settings.notifications.likesDescription}
               checked={activityPrefs.shotLikes}
               onChange={(v) => setActivityPrefs((p) => ({ ...p, shotLikes: v }))}
               isLast
@@ -167,13 +164,13 @@ export const NotificationsPage = () => {
         {/* Weekly Newsletters */}
         <div className="flex flex-col gap-6">
           <NotificationSection
-            title="Weekly Newsletters"
+            title={t.settings.notifications.newsletterGroup}
             allChecked={newsletterAllChecked}
             onToggleAll={toggleAllNewsletter}
           >
             <NotificationRow
-              label="Education"
-              description="Monday: design workshops and education resources for your career"
+              label={t.settings.notifications.education}
+              description={t.settings.notifications.educationDescription}
               checked={newsletterPrefs.education}
               onChange={(v) => setNewsletterPrefs({ education: v })}
               isLast
@@ -183,7 +180,7 @@ export const NotificationsPage = () => {
 
         <div className="flex justify-end">
           <Button type="submit" variant="dark">
-            Save change
+            {t.common.saveChanges}
           </Button>
         </div>
       </form>

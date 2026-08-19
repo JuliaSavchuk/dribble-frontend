@@ -10,12 +10,14 @@ import { NewPasswordStep } from '../../components/auth/steps/NewPasswordStep'
 import { Alert } from '../../components/ui/Alert'
 import { usePasswordResetRequest, usePasswordResetConfirm, useGoogleLogin } from '../../hooks/useAuth'
 import { getErrorMessage, isNotImplemented } from '../../utils/errors'
+import { useT } from '../../i18n'
 
 type Step = 'email' | 'otp' | 'password'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const RecoveryPage = () => {
+  const t = useT()
   const navigate = useNavigate()
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
@@ -32,7 +34,7 @@ export const RecoveryPage = () => {
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!EMAIL_RE.test(email)) {
-      setFormError('Введіть коректну email адресу.')
+      setFormError(t.auth.recovery.emailInvalid)
       return
     }
     setFormError(null)
@@ -41,9 +43,7 @@ export const RecoveryPage = () => {
       onSuccess: () => setStep('otp'),
       onError: (err) => {
         if (isNotImplemented(err)) {
-          setFormError(
-            'Функція відновлення пароля поки не підтримується сервером. Зверніться до підтримки або спробуйте пізніше.'
-          )
+          setFormError(t.auth.recovery.notImplemented)
         } else {
           setFormError(getErrorMessage(err))
         }
@@ -61,7 +61,7 @@ export const RecoveryPage = () => {
       { email, password, password2: confirmPassword },
       {
         onSuccess: () => {
-          setInfoMsg('Пароль успішно змінено. Тепер ви можете увійти.')
+          setInfoMsg(t.auth.recovery.passwordChanged)
           navigate('/login')
         },
         onError: (err) => {
@@ -84,7 +84,7 @@ export const RecoveryPage = () => {
         <AuthCard onBack={() => navigate('/login')}>
           <div className="flex flex-col items-center">
             <VoxelLogo className="mb-5" />
-            <h1 className="text-xl font-bold text-voxel-black">Recovery your password</h1>
+            <h1 className="text-xl font-bold text-voxel-black">{t.auth.recovery.title}</h1>
           </div>
 
           <div>
@@ -94,7 +94,7 @@ export const RecoveryPage = () => {
             <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
               <AuthInput
                 type="email"
-                placeholder="Enter your Email"
+                placeholder={t.auth.recovery.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
@@ -102,7 +102,7 @@ export const RecoveryPage = () => {
                 required
               />
               <AuthButton active={email.length > 0} isLoading={resetRequest.isPending}>
-                Send
+                {t.auth.recovery.send}
               </AuthButton>
             </form>
 
@@ -112,7 +112,7 @@ export const RecoveryPage = () => {
               disabled={googleMutation.isPending}
               className="mt-4 w-full text-center text-sm font-medium text-voxel-gray-dark underline-offset-2 hover:underline cursor-pointer disabled:opacity-50"
             >
-              Use Google
+              {t.auth.recovery.useGoogle}
             </button>
           </div>
         </AuthCard>
@@ -138,14 +138,14 @@ export const RecoveryPage = () => {
   return (
     <AuthBackground>
       <NewPasswordStep
-        title="Create a new password"
+        title={t.auth.recovery.newPasswordTitle}
         password={password}
         onPasswordChange={setPassword}
         confirmPassword={confirmPassword}
         onConfirmChange={setConfirmPassword}
-        passwordPlaceholder="Enter a new password"
-        confirmPlaceholder="Confirm password"
-        submitLabel="Send"
+        passwordPlaceholder={t.auth.recovery.newPasswordPlaceholder}
+        confirmPlaceholder={t.auth.recovery.confirmPasswordPlaceholder}
+        submitLabel={t.auth.recovery.send}
         onBack={() => setStep('otp')}
         onSubmit={handlePasswordSubmit}
         isLoading={resetConfirm.isPending}
@@ -156,7 +156,7 @@ export const RecoveryPage = () => {
             onClick={handleUseGoogle}
             className="font-medium text-voxel-gray-dark underline-offset-2 hover:underline cursor-pointer"
           >
-            Use Google
+            {t.auth.recovery.useGoogle}
           </button>
         }
       />

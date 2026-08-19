@@ -4,6 +4,7 @@ import { VoxelLogo } from '../VoxelLogo'
 import { AuthInput } from '../AuthInput'
 import { AuthButton } from '../AuthButton'
 import { Alert } from '../../ui/Alert'
+import { useT } from '../../../i18n'
 
 interface NewPasswordStepProps {
   title: string
@@ -27,8 +28,8 @@ export const NewPasswordStep = ({
   onPasswordChange,
   confirmPassword,
   onConfirmChange,
-  passwordPlaceholder = 'Enter your password',
-  confirmPlaceholder = 'Confirm password',
+  passwordPlaceholder,
+  confirmPlaceholder,
   submitLabel,
   onBack,
   onSubmit,
@@ -36,6 +37,7 @@ export const NewPasswordStep = ({
   error,
   footer,
 }: NewPasswordStepProps) => {
+  const t = useT()
   const isFilled = password.length >= 8 && confirmPassword.length >= 8
   const mismatch = password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword
 
@@ -54,12 +56,12 @@ export const NewPasswordStep = ({
 
       <div>
         {error && <Alert type="error" message={error} className="mb-4" />}
-        {mismatch && <Alert type="error" message="Паролі не співпадають." className="mb-4" />}
+        {mismatch && <Alert type="error" message={t.auth.newPassword.mismatch} className="mb-4" />}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <AuthInput
             type="password"
-            placeholder={passwordPlaceholder}
+            placeholder={passwordPlaceholder ?? t.auth.newPassword.passwordPlaceholder}
             value={password}
             onChange={(e) => onPasswordChange(e.target.value)}
             autoComplete="new-password"
@@ -69,7 +71,7 @@ export const NewPasswordStep = ({
           />
           <AuthInput
             type="password"
-            placeholder={confirmPlaceholder}
+            placeholder={confirmPlaceholder ?? t.auth.newPassword.confirmPlaceholder}
             value={confirmPassword}
             onChange={(e) => onConfirmChange(e.target.value)}
             autoComplete="new-password"

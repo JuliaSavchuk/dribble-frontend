@@ -6,12 +6,10 @@ import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
 import { Spinner } from '../../components/ui/Spinner'
 import { TwitterIcon, InstagramIcon, LinkedInIcon, WebIcon } from '../../components/ui/SocialIcons'
+import { useT } from '../../i18n'
 
-// На відміну від General/Edit Profile/Company, поля тут (website, twitter,
-// instagram, linkedin) ВЖЕ входять до Фази 0 API контракту — це та сама
-// логіка, що раніше жила у ProfilePage.tsx, лише перенесена у власну
-// сторінку розділу Settings за новим макетом.
 export const SocialProfilesPage = () => {
+  const t = useT()
   const { data: profile, isLoading } = useProfile()
   const updateMutation = useUpdateProfile()
 
@@ -36,7 +34,7 @@ export const SocialProfilesPage = () => {
       { website, twitter, instagram, linkedin },
       {
         onSuccess: () => {
-          setSuccessMsg('Зміни збережено!')
+          setSuccessMsg(t.settings.socialProfiles.saved)
           setTimeout(() => setSuccessMsg(''), 4000)
         },
       }
@@ -45,7 +43,7 @@ export const SocialProfilesPage = () => {
 
   if (isLoading) {
     return (
-      <SettingsLayout title="Social Profiles">
+      <SettingsLayout title={t.settings.socialProfiles.title}>
         <div className="py-20 flex justify-center">
           <Spinner size="lg" />
         </div>
@@ -54,15 +52,15 @@ export const SocialProfilesPage = () => {
   }
 
   return (
-    <SettingsLayout title="Social Profiles">
+    <SettingsLayout title={t.settings.socialProfiles.title}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-9">
         {successMsg && <Alert type="success" message={successMsg} />}
         {updateMutation.isError && (
-          <Alert type="error" message="Не вдалося зберегти. Спробуйте ще раз." />
+          <Alert type="error" message={t.settings.socialProfiles.saveFailed} />
         )}
 
         <SettingsField
-          label="Website"
+          label={t.settings.socialProfiles.website}
           type="url"
           placeholder="https://myportfolio.com"
           icon={<WebIcon />}
@@ -70,7 +68,7 @@ export const SocialProfilesPage = () => {
           onChange={(e) => setWebsite(e.target.value)}
         />
         <SettingsField
-          label="Twitter / X"
+          label={t.settings.socialProfiles.twitter}
           type="url"
           placeholder="https://twitter.com/username"
           icon={<TwitterIcon />}
@@ -78,7 +76,7 @@ export const SocialProfilesPage = () => {
           onChange={(e) => setTwitter(e.target.value)}
         />
         <SettingsField
-          label="Instagram"
+          label={t.settings.socialProfiles.instagram}
           type="url"
           placeholder="https://instagram.com/username"
           icon={<InstagramIcon />}
@@ -86,7 +84,7 @@ export const SocialProfilesPage = () => {
           onChange={(e) => setInstagram(e.target.value)}
         />
         <SettingsField
-          label="LinkedIn"
+          label={t.settings.socialProfiles.linkedin}
           type="url"
           placeholder="https://linkedin.com/in/username"
           icon={<LinkedInIcon />}
@@ -101,7 +99,7 @@ export const SocialProfilesPage = () => {
             isLoading={updateMutation.isPending}
             disabled={updateMutation.isPending}
           >
-            Save change
+            {t.common.saveChanges}
           </Button>
         </div>
       </form>

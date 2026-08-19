@@ -3,8 +3,10 @@ import { useSearchQuery } from '../hooks/useSearch'
 import { ShotCard } from '../components/ui/ShotCard'
 import { Spinner } from '../components/ui/Spinner'
 import { Avatar } from '../components/ui/Avatar'
+import { useT } from '../i18n'
 
 export const SearchPage = () => {
+  const t = useT()
   const [searchParams] = useSearchParams()
   const q = searchParams.get('q') || ''
 
@@ -13,7 +15,7 @@ export const SearchPage = () => {
   if (!q.trim()) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-16 text-center text-muted">
-        Введіть запит у полі пошуку, щоб знайти роботи або користувачів.
+        {t.search.emptyQuery}
       </div>
     )
   }
@@ -21,7 +23,7 @@ export const SearchPage = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-extrabold text-ink mb-8">
-        Результати пошуку за запитом «{q}»
+        {t.search.resultsFor(q)}
       </h1>
 
       {isLoading && (
@@ -32,7 +34,7 @@ export const SearchPage = () => {
 
       {isError && (
         <div className="text-center py-12 text-red-500 font-semibold">
-          Не вдалося виконати пошук. Спробуйте пізніше.
+          {t.search.error}
         </div>
       )}
 
@@ -41,7 +43,7 @@ export const SearchPage = () => {
           {/* Користувачі */}
           {data.users.count > 0 && (
             <section className="mb-12">
-              <h2 className="text-lg font-bold text-ink mb-4">Користувачі ({data.users.count})</h2>
+              <h2 className="text-lg font-bold text-ink mb-4">{t.search.usersHeading(data.users.count)}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {data.users.results.map((u) => (
                   <Link
@@ -67,9 +69,9 @@ export const SearchPage = () => {
 
           {/* Роботи */}
           <section>
-            <h2 className="text-lg font-bold text-ink mb-4">Роботи ({data.shots.count})</h2>
+            <h2 className="text-lg font-bold text-ink mb-4">{t.search.shotsHeading(data.shots.count)}</h2>
             {data.shots.count === 0 ? (
-              <p className="text-sm text-muted">Робіт за вашим запитом не знайдено.</p>
+              <p className="text-sm text-muted">{t.search.noShots}</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {data.shots.results.map((shot) => (

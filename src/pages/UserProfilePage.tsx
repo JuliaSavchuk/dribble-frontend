@@ -8,14 +8,13 @@ import {
   useFollowersQuery,
   useFollowingQuery,
 } from '../hooks/useUsers'
-import { useFeedQuery } from '../hooks/useShots'
+import { useFeedQuery, useAuthorTagsQuery } from '../hooks/useShots'
 import { useAuthStore } from '../store/authStore'
 import { Button } from '../components/ui/Button'
 import { ShotCard } from '../components/ui/ShotCard'
 import { Spinner } from '../components/ui/Spinner'
 import { Avatar } from '../components/ui/Avatar'
 import { FollowListModal } from '../components/profile/FollowListModal'
-import { CATEGORY_TAGS } from '../constants/categories'
 
 // lucide-react більше не постачає брендові іконки (політика торгових
 // марок), тому Twitter/Instagram/LinkedIn відмальовуються власними SVG.
@@ -60,7 +59,7 @@ export const UserProfilePage = () => {
   )
   const shots = shotsData?.pages.flatMap((page) => page.results) ?? []
 
-  const availableCategories = CATEGORY_TAGS
+  const availableCategories = useAuthorTagsQuery(profile?.id).data ?? []
 
   // Вподобані автором роботи
   const { data: likedData, isLoading: likedLoading } = useLikedShotsQuery(

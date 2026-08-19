@@ -1,24 +1,26 @@
 import { Link } from 'react-router'
 import { Logo } from '../ui/Logo'
-
-const FOR_DESIGNERS_LINKS = ['Blog', 'About', 'Support']
-
-const COLUMN_1 = ['Jobs', 'Places', 'Resources', 'Tags']
-const COLUMN_2 = ['Freelancers', 'Designers']
+import { useT } from '../../i18n'
 
 export const Footer = () => {
+  const t = useT()
+
+  const FOR_DESIGNERS_LINKS = [t.footer.blog, t.footer.about, t.footer.support]
+  const COLUMN_1 = [t.footer.jobs, t.footer.places, t.footer.resources, t.footer.tags]
+  const COLUMN_2 = [t.footer.freelancers, t.footer.designers]
+
   return (
     <footer className="bg-surface-alt mt-auto">
       <div className="max-w-[110rem] mx-auto px-6 sm:px-10 py-16">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
-          {/* Логотип + навігація "For designers" */}
+          {/* Логотип + навігація*/}
           <div className="flex flex-col gap-8">
             <Link to="/">
               <Logo className="gap-2" imgClassName="h-8 w-8" textClassName="text-ink" />
             </Link>
 
             <nav className="flex flex-wrap items-center gap-6">
-              <span className="text-sm font-bold text-ink">For designers</span>
+              <span className="text-sm font-bold text-ink">{t.footer.forDesigners}</span>
               {FOR_DESIGNERS_LINKS.map((label) => (
                 <a key={label} href="#" className="text-sm font-bold text-ink hover:text-primary transition-colors">
                   {label}
@@ -64,9 +66,9 @@ export const Footer = () => {
         <div className="mt-12 pt-6 border-t border-border flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-muted">
           <span>@2026 Voxel</span>
           <span className="inline-flex items-center gap-1">
-            <CookieIcon /> Cookies
+            <CookieIcon /> {t.footer.cookies}
           </span>
-          <span>Privacy</span>
+          <span>{t.footer.privacy}</span>
         </div>
       </div>
     </footer>

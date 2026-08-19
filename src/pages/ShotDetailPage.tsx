@@ -14,8 +14,10 @@ import { Avatar } from '../components/ui/Avatar'
 import { CommentsSkeleton } from '../components/ui/CommentsSkeleton'
 import { Pagination } from '../components/ui/Pagination'
 import { cn } from '../utils/cn'
+import { useT } from '../i18n'
 
 export const ShotDetailPage = () => {
+  const t = useT()
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
   const currentUser = useAuthStore((s) => s.user)
@@ -73,7 +75,7 @@ export const ShotDetailPage = () => {
   if (isError || !shot) {
     return (
       <div className="text-center py-24 text-red-500 font-semibold">
-        Роботу не знайдено або сталася помилка завантаження.
+        {t.shotDetail.notFound}
       </div>
     )
   }
@@ -81,7 +83,7 @@ export const ShotDetailPage = () => {
   const isAuthor = currentUser?.id === shot.author.id
 
   const handleDelete = () => {
-    if (confirm('Ви впевнені, що хочете видалити цей Shot?')) {
+    if (confirm(t.shotDetail.confirmDelete)) {
       deleteMutation.mutate(shot.id)
     }
   }
@@ -89,7 +91,7 @@ export const ShotDetailPage = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <Link to="/feed" className="text-sm text-muted hover:text-ink transition-colors mb-6 inline-block">
-        &larr; Назад до стрічки
+        &larr; {t.shotDetail.backToFeed}
       </Link>
 
       {/* Заголовок та автор */}
@@ -125,7 +127,7 @@ export const ShotDetailPage = () => {
             disabled={!isAuthed || likeMutation.isPending}
           >
             <Heart className="w-4 h-4" fill={shot.is_liked ? 'currentColor' : 'none'} />
-            Лайк ({shot.likes_count})
+            {t.shotDetail.like(shot.likes_count)}
           </Button>
           <Button
             variant="secondary"
@@ -134,7 +136,7 @@ export const ShotDetailPage = () => {
             disabled={!isAuthed || saveMutation.isPending}
           >
             <Bookmark className="w-4 h-4" fill={shot.is_saved ? 'currentColor' : 'none'} />
-            Зберегти
+            {t.common.save}
           </Button>
 
           {isAuthor && (
@@ -143,7 +145,7 @@ export const ShotDetailPage = () => {
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
               className="w-10 h-10 rounded-full border border-red-200 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white hover:border-red-500 flex items-center justify-center transition-colors btn-pop cursor-pointer disabled:opacity-50"
-              title="Видалити Shot"
+              title={t.shotDetail.deleteShot}
             >
               <Trash2 className="w-5 h-5" />
             </button>
@@ -160,15 +162,15 @@ export const ShotDetailPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 flex flex-col gap-10">
           <div>
-            <h3 className="text-lg font-bold text-ink mb-2">Опис</h3>
+            <h3 className="text-lg font-bold text-ink mb-2">{t.shotDetail.description}</h3>
             <p className="text-muted leading-relaxed text-sm whitespace-pre-line">
-              {shot.description || 'Опис відсутній.'}
+              {shot.description || t.shotDetail.noDescription}
             </p>
           </div>
 
           {/* Коментарі */}
           <div id="comments" className="scroll-mt-24">
-            <h3 className="text-lg font-bold text-ink mb-4">Коментарі ({shot.comments_count})</h3>
+            <h3 className="text-lg font-bold text-ink mb-4">{t.shotDetail.commentsHeading(shot.comments_count)}</h3>
 
             {isAuthed && (
               <form onSubmit={handleAddComment} className="flex items-center gap-2 mb-6">
@@ -176,7 +178,7 @@ export const ShotDetailPage = () => {
                   type="text"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Додати коментар..."
+                  placeholder={t.shotDetail.addCommentPlaceholder}
                   className="flex-1 rounded-full bg-white border border-border px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-primary"
                 />
                 <button
@@ -192,7 +194,7 @@ export const ShotDetailPage = () => {
             {commentsLoading && <CommentsSkeleton />}
 
             {!commentsLoading && commentsData?.results.length === 0 && (
-              <p className="text-sm text-muted">Коментарів поки немає. Будьте першим!</p>
+              <p className="text-sm text-muted">{t.shotDetail.noComments}</p>
             )}
 
             <div className="flex flex-col gap-4">
@@ -218,7 +220,7 @@ export const ShotDetailPage = () => {
                       onClick={() => deleteCommentMutation.mutate(comment.id)}
                       disabled={deleteCommentMutation.isPending}
                       className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-red-500 shrink-0 self-start mt-2 cursor-pointer disabled:opacity-50 btn-pop"
-                      title="Видалити коментар"
+                      title={t.shotDetail.deleteComment}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -237,7 +239,7 @@ export const ShotDetailPage = () => {
         </div>
 
         <div className="bg-surface-alt border border-border rounded-2xl p-6 h-fit">
-          <h3 className="text-sm font-semibold text-ink tracking-wider uppercase mb-4">Теги роботи</h3>
+          <h3 className="text-sm font-semibold text-ink tracking-wider uppercase mb-4">{t.shotDetail.tags}</h3>
           {shot.tags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {shot.tags.map((tag) => (
@@ -251,7 +253,7 @@ export const ShotDetailPage = () => {
               ))}
             </div>
           ) : (
-            <p className="text-xs text-muted">Тегів немає.</p>
+            <p className="text-xs text-muted">{t.shotDetail.noTags}</p>
           )}
         </div>
       </div>

@@ -7,10 +7,6 @@ export interface GetCommentsParams {
 }
 
 // Comments API GET/POST /api/shots/:id/comments/
-// Коментарі мають повертатись пагіновано, по 15 на сторінку. Наразі бекенд
-// (apps/shots/views.py) повертає простий масив без пагінації (BUG-3 з
-// TESTING_PLAN.md) — тип відповіді відображає обидва можливі варіанти,
-// нормалізація відбувається у хуку useCommentsQuery.
 export const commentsApi = {
   getComments: (shotId: string | number, params?: GetCommentsParams) =>
     api.get<PaginatedResponse<Comment> | Comment[]>(`/shots/${shotId}/comments/`, { params }),

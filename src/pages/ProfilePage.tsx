@@ -9,6 +9,7 @@ import { Spinner } from '../components/ui/Spinner'
 import { getErrorMessage } from '../utils/errors'
 import { getAvatarColor, getAvatarInitial } from '../utils/avatarColor'
 import { TwitterIcon, InstagramIcon, LinkedInIcon, WebIcon } from '../components/ui/SocialIcons'
+import { useT } from '../i18n'
 
 //Stat Card
 const StatCard = ({ value, label }: { value: number; label: string }) => (
@@ -54,6 +55,7 @@ const SocialInput = ({
 
 //Main component
 export const ProfilePage = () => {
+  const t = useT()
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
 
@@ -122,7 +124,7 @@ export const ProfilePage = () => {
       { bio, website, twitter, instagram, linkedin, avatar: avatarFile },
       {
         onSuccess: () => {
-          setSuccessMsg('Профіль успішно оновлено!')
+          setSuccessMsg(t.settings.editProfile.updated)
           setAvatarFile(null)
           setTimeout(() => setSuccessMsg(''), 4000)
         },
@@ -140,11 +142,11 @@ export const ProfilePage = () => {
     setPasswordError('')
 
     if (newPassword !== newPassword2) {
-      setPasswordError('Нові паролі не співпадають.')
+      setPasswordError(t.settings.password.mismatch)
       return
     }
     if (newPassword.length < 8) {
-      setPasswordError('Пароль має містити щонайменше 8 символів.')
+      setPasswordError(t.profile.passwordTooShort)
       return
     }
 
@@ -152,7 +154,7 @@ export const ProfilePage = () => {
       { old_password: oldPassword, new_password: newPassword, new_password2: newPassword2 },
       {
         onSuccess: () => {
-          setPasswordSuccess('Пароль успішно змінено!')
+          setPasswordSuccess(t.settings.password.changed)
           setOldPassword('')
           setNewPassword('')
           setNewPassword2('')
@@ -208,7 +210,7 @@ export const ProfilePage = () => {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-                aria-label="Змінити фото профілю"
+                aria-label={t.profile.changeAvatarAria}
               >
                 <svg className="w-6 h-6 text-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -221,11 +223,11 @@ export const ProfilePage = () => {
                 accept="image/*"
                 onChange={handleAvatarChange}
                 className="hidden"
-                aria-label="Завантажити аватар"
+                aria-label={t.profile.uploadAvatarAria}
               />
             </div>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
-              Вийти
+              {t.nav.logout}
             </Button>
           </div>
 
@@ -238,18 +240,18 @@ export const ProfilePage = () => {
 
           {/* Stats */}
           <div className="flex items-center gap-8 mt-5 pt-5 border-t border-border">
-            <StatCard value={profile?.shots_count ?? 0} label="Робіт" />
+            <StatCard value={profile?.shots_count ?? 0} label={t.settings.general.shots} />
             <div className="w-px h-8 bg-surface-alt" />
-            <StatCard value={profile?.followers_count ?? 0} label="Підписники" />
+            <StatCard value={profile?.followers_count ?? 0} label={t.profile.followers} />
             <div className="w-px h-8 bg-surface-alt" />
-            <StatCard value={profile?.following_count ?? 0} label="Підписки" />
+            <StatCard value={profile?.following_count ?? 0} label={t.settings.general.following} />
           </div>
         </div>
       </div>
 
       {/* Edit form */}
       <div className="bg-white border border-border rounded-3xl p-8 shadow-2xl shadow-black/5">
-        <h2 className="text-lg font-bold text-ink mb-6">Редагувати профіль</h2>
+        <h2 className="text-lg font-bold text-ink mb-6">{t.settings.editProfile.title}</h2>
 
         {successMsg && (
           <Alert type="success" message={successMsg} className="mb-6" />
@@ -257,7 +259,7 @@ export const ProfilePage = () => {
         {updateMutation.isError && (
           <Alert
             type="error"
-            message="Не вдалося зберегти. Спробуйте ще раз."
+            message={t.settings.editProfile.saveFailed}
             className="mb-6"
           />
         )}
@@ -266,14 +268,14 @@ export const ProfilePage = () => {
           {/* Read-only fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Ім'я користувача"
+              label={t.settings.general.username}
               value={profile?.username ?? ''}
               disabled
               className="opacity-50"
               readOnly
             />
             <Input
-              label="Email"
+              label={t.profile.email}
               value={profile?.email ?? ''}
               disabled
               className="opacity-50"
@@ -284,7 +286,7 @@ export const ProfilePage = () => {
           {/* Bio */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted tracking-wider uppercase">
-              Про себе
+              {t.settings.editProfile.bio}
             </label>
             <textarea
               value={bio}
@@ -292,7 +294,7 @@ export const ProfilePage = () => {
               maxLength={500}
               disabled={updateMutation.isPending}
               rows={3}
-              placeholder="Розкажіть про свої проєкти та досвід..."
+              placeholder={t.profile.bioPlaceholder}
               className="w-full rounded-2xl bg-surface-alt border border-border px-4 py-3 text-sm text-ink placeholder:text-muted/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all duration-200 resize-none disabled:opacity-50"
             />
             <span className="text-xs text-muted/60 text-right">{bio.length}/500</span>
@@ -301,10 +303,10 @@ export const ProfilePage = () => {
           {/* Social links */}
           <div className="flex flex-col gap-4">
             <span className="text-xs font-semibold text-muted tracking-wider uppercase">
-              Соціальні мережі
+              {t.settings.socialProfiles.title}
             </span>
             <SocialInput
-              label="Вебсайт"
+              label={t.settings.socialProfiles.website}
               icon={<WebIcon />}
               value={website}
               onChange={setWebsite}
@@ -312,7 +314,7 @@ export const ProfilePage = () => {
               disabled={updateMutation.isPending}
             />
             <SocialInput
-              label="Twitter / X"
+              label={t.settings.socialProfiles.twitter}
               icon={<TwitterIcon />}
               value={twitter}
               onChange={setTwitter}
@@ -320,7 +322,7 @@ export const ProfilePage = () => {
               disabled={updateMutation.isPending}
             />
             <SocialInput
-              label="Instagram"
+              label={t.settings.socialProfiles.instagram}
               icon={<InstagramIcon />}
               value={instagram}
               onChange={setInstagram}
@@ -328,7 +330,7 @@ export const ProfilePage = () => {
               disabled={updateMutation.isPending}
             />
             <SocialInput
-              label="LinkedIn"
+              label={t.settings.socialProfiles.linkedin}
               icon={<LinkedInIcon />}
               value={linkedin}
               onChange={setLinkedin}
@@ -354,12 +356,12 @@ export const ProfilePage = () => {
             )}
             <div className="flex-1">
               <p className="text-sm font-medium text-ink">
-                {avatarFile ? avatarFile.name : 'Фото профілю'}
+                {avatarFile ? avatarFile.name : t.profile.photoLabel}
               </p>
               <p className="text-xs text-muted">
                 {avatarFile
                   ? `${(avatarFile.size / 1024).toFixed(0)} KB`
-                  : 'PNG, JPG, WEBP до 5 MB'}
+                  : t.profile.avatarFormatHint}
               </p>
             </div>
             <Button
@@ -368,7 +370,7 @@ export const ProfilePage = () => {
               size="sm"
               onClick={() => fileInputRef.current?.click()}
             >
-              Обрати
+              {t.profile.chooseAvatar}
             </Button>
           </div>
 
@@ -379,21 +381,21 @@ export const ProfilePage = () => {
             className="w-full"
             size="lg"
           >
-            Зберегти зміни
+            {t.common.saveChanges}
           </Button>
         </form>
       </div>
 
       {/* Зміна паролю*/}
       <div className="bg-white border border-border rounded-3xl p-8 shadow-2xl shadow-black/5 mt-6">
-        <h2 className="text-lg font-bold text-ink mb-6">Зміна паролю</h2>
+        <h2 className="text-lg font-bold text-ink mb-6">{t.profile.changePasswordTitle}</h2>
 
         {passwordSuccess && <Alert type="success" message={passwordSuccess} className="mb-6" />}
         {passwordError && <Alert type="error" message={passwordError} className="mb-6" />}
 
         <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
           <Input
-            label="Поточний пароль"
+            label={t.settings.password.currentPassword}
             type="password"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
@@ -403,7 +405,7 @@ export const ProfilePage = () => {
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Новий пароль"
+              label={t.profile.newPasswordLabel}
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -412,7 +414,7 @@ export const ProfilePage = () => {
               required
             />
             <Input
-              label="Підтвердіть новий пароль"
+              label={t.profile.confirmNewPasswordLabel}
               type="password"
               value={newPassword2}
               onChange={(e) => setNewPassword2(e.target.value)}
@@ -428,7 +430,7 @@ export const ProfilePage = () => {
             disabled={changePasswordMutation.isPending}
             className="w-full sm:w-auto sm:self-start"
           >
-            Змінити пароль
+            {t.profile.changePasswordButton}
           </Button>
         </form>
       </div>

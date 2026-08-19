@@ -56,12 +56,6 @@ export interface GoogleLoginResponse {
   created: boolean
 }
 
-// Відновлення пароля
-// Ці ендпоінти ще не описані в Фазі 0 API контракту і не реалізовані на
-// бекенді. Інтерфейси та клієнтські виклики підготовлені наперед, щоб
-// підключення відбулося без змін на фронтенді, щойно бекенд їх додасть.
-// Поки що UI обробляє відсутність цих ендпоінтів коректно (повідомлення
-// "функція ще не підтримується сервером").
 
 export interface PasswordResetRequest {
   email: string
@@ -159,10 +153,7 @@ export interface SearchResponse {
   }
 }
 
-// Сира відповідь бекенду GET /api/search/ (apps/shots/views.py: SearchView).
-// На відміну від очікуваного SearchResponse, бекенд повертає `shots` та
-// `users` простими масивами, без обгортки { count, results }. Нормалізація
-// до SearchResponse відбувається у хуку useSearchQuery.
+// Сира відповідь бекенду GET /api/search/ (
 export interface RawSearchResponse {
   shots: Shot[] | PaginatedResponse<Shot>
   users: SearchUserResult[] | PaginatedResponse<SearchUserResult>

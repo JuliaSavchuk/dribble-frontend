@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useT } from '../../i18n'
 
 interface NotificationRowProps {
   label: string
@@ -48,6 +49,7 @@ export const NotificationSection = ({
   allChecked,
   onToggleAll,
 }: NotificationSectionProps) => {
+  const t = useT()
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -57,7 +59,7 @@ export const NotificationSection = ({
           onClick={() => onToggleAll(!allChecked)}
           className="text-base text-black underline underline-offset-2 hover:opacity-70 transition-opacity cursor-pointer"
         >
-          Toggle all
+          {t.common.toggleAll}
         </button>
       </div>
       {children}

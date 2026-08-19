@@ -3,20 +3,18 @@ import { Users } from 'lucide-react'
 import { SettingsLayout } from '../../components/settings/SettingsLayout'
 import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
+import { useT } from '../../i18n'
 
-// Немає бекенд-підтримки команд (моделей/ендпоінтів) — "Create" повідомляє
-// про це чесно. Замість фірмової ілюстрації з макету (файл недоступний
-// у коді) використано нейтральну ілюстрацію-заглушку тими самими
-// кольорами застосунку, щоб не порушувати візуальну єдність сторінки.
 export const TeamsPage = () => {
+  const t = useT()
   const [notice, setNotice] = useState('')
 
   const handleCreate = () => {
-    setNotice('Робота з командами ще не реалізована на бекенді — цю дію поки не збережено.')
+    setNotice(t.settings.teams.notImplemented)
   }
 
   return (
-    <SettingsLayout title="Teams">
+    <SettingsLayout title={t.settings.teams.title}>
       <div className="flex flex-col items-center text-center gap-6 py-10">
         {notice && <Alert type="info" message={notice} className="w-full" />}
 
@@ -27,14 +25,14 @@ export const TeamsPage = () => {
         </div>
 
         <div className="flex flex-col gap-2 max-w-sm">
-          <h2 className="text-xl font-semibold text-black">Create a Team</h2>
+          <h2 className="text-xl font-semibold text-black">{t.settings.teams.createTeam}</h2>
           <p className="text-sm text-black/60">
-            Collaborate with teammates, manage shared projects, and hire together on Voxel.
+            {t.settings.teams.description}
           </p>
         </div>
 
         <Button type="button" variant="dark" onClick={handleCreate}>
-          Create
+          {t.common.create}
         </Button>
       </div>
     </SettingsLayout>

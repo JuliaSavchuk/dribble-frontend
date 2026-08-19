@@ -10,8 +10,10 @@ import { GoogleButton } from '../../components/auth/GoogleButton'
 import { AuthDivider } from '../../components/auth/AuthDivider'
 import { Alert } from '../../components/ui/Alert'
 import { getErrorMessage } from '../../utils/errors'
+import { useT } from '../../i18n'
 
 export const LoginPage = () => {
+  const t = useT()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -25,7 +27,6 @@ export const LoginPage = () => {
   }
 
   const handleGoogle = () => {
-    // У продакшені: отримати Google ID token через Google SDK
     googleMutation.mutate('mock-google-id-token')
   }
 
@@ -42,20 +43,20 @@ export const LoginPage = () => {
       <AuthCard>
         <div className="flex flex-col items-center">
           <VoxelLogo className="mb-5" />
-          <h1 className="text-xl font-bold text-voxel-black">Welcome back</h1>
+          <h1 className="text-xl font-bold text-voxel-black">{t.auth.login.title}</h1>
         </div>
 
         <div>
           {errorMsg && <Alert type="error" message={errorMsg} className="mb-4" />}
 
-          <GoogleButton label="Login with Google account" onClick={handleGoogle} disabled={isLoading} />
+          <GoogleButton label={t.auth.login.googleButton} onClick={handleGoogle} disabled={isLoading} />
 
           <AuthDivider className="my-4" />
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <AuthInput
               type="email"
-              placeholder="Enter email address"
+              placeholder={t.auth.login.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -65,7 +66,7 @@ export const LoginPage = () => {
             <div className="flex flex-col gap-1.5">
               <AuthInput
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t.auth.login.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
@@ -76,22 +77,22 @@ export const LoginPage = () => {
                 to="/recovery"
                 className="self-end text-xs font-medium text-voxel-gray-dark underline-offset-2 hover:underline"
               >
-                Forgot password?
+                {t.auth.login.forgotPassword}
               </Link>
             </div>
 
             <AuthButton active={email.length > 0 && password.length > 0} isLoading={loginMutation.isPending}>
-              Continue
+              {t.auth.login.continue}
             </AuthButton>
           </form>
 
           <p className="mt-6 text-center text-sm text-voxel-gray-dark">
-            By continuing, you agree to our Terms and Privacy Policy.
+            {t.auth.login.terms}
           </p>
           <p className="mt-2 text-center text-sm text-voxel-black">
-            Don't have an account?{' '}
+            {t.auth.login.noAccount}{' '}
             <Link to="/register" className="font-semibold underline">
-              Sign up
+              {t.auth.login.signUp}
             </Link>
           </p>
         </div>

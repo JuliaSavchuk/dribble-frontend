@@ -5,8 +5,10 @@ import { SettingsField } from '../../components/settings/SettingsField'
 import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
 import { getErrorMessage } from '../../utils/errors'
+import { useT } from '../../i18n'
 
 export const PasswordPage = () => {
+  const t = useT()
   const changePasswordMutation = useChangePassword()
 
   const [oldPassword, setOldPassword] = useState('')
@@ -20,11 +22,11 @@ export const PasswordPage = () => {
     setError('')
 
     if (newPassword.length < 5) {
-      setError('Пароль має містити щонайменше 5 символів.')
+      setError(t.settings.password.tooShort)
       return
     }
     if (newPassword !== newPassword2) {
-      setError('Нові паролі не співпадають.')
+      setError(t.settings.password.mismatch)
       return
     }
 
@@ -32,7 +34,7 @@ export const PasswordPage = () => {
       { old_password: oldPassword, new_password: newPassword, new_password2: newPassword2 },
       {
         onSuccess: () => {
-          setSuccess('Пароль успішно змінено!')
+          setSuccess(t.settings.password.changed)
           setOldPassword('')
           setNewPassword('')
           setNewPassword2('')
@@ -44,34 +46,34 @@ export const PasswordPage = () => {
   }
 
   return (
-    <SettingsLayout title="Password">
+    <SettingsLayout title={t.settings.password.title}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         {success && <Alert type="success" message={success} />}
         {error && <Alert type="error" message={error} />}
 
         <SettingsField
-          label="Current password"
+          label={t.settings.password.currentPassword}
           type="password"
-          placeholder="Enter current password"
+          placeholder={t.settings.password.currentPasswordPlaceholder}
           autoComplete="current-password"
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
           required
         />
         <SettingsField
-          label="Password"
+          label={t.settings.password.newPassword}
           type="password"
-          placeholder="Enter password"
+          placeholder={t.settings.password.newPasswordPlaceholder}
           autoComplete="new-password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          hint="Minimum 5 characters"
+          hint={t.settings.password.minLengthHint}
           required
         />
         <SettingsField
-          label="Confirm password"
+          label={t.settings.password.confirmPassword}
           type="password"
-          placeholder="Enter password again"
+          placeholder={t.settings.password.confirmPasswordPlaceholder}
           autoComplete="new-password"
           value={newPassword2}
           onChange={(e) => setNewPassword2(e.target.value)}
@@ -85,7 +87,7 @@ export const PasswordPage = () => {
             isLoading={changePasswordMutation.isPending}
             disabled={changePasswordMutation.isPending}
           >
-            Save
+            {t.settings.password.save}
           </Button>
         </div>
       </form>

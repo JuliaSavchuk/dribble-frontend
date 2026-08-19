@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Search, Upload } from 'lucide-react'
-import { useFeedQuery } from '../hooks/useShots'
+import { useFeedQuery, usePopularTagsQuery } from '../hooks/useShots'
 import { ShotCard } from '../components/ui/ShotCard'
 import { Button } from '../components/ui/Button'
 import { useAuthStore } from '../store/authStore'
-
-const POPULAR_TAGS = ['all', 'mobile', 'web', 'dashboard', 'productivity', 'glassmorphism', 'saas', 'banking', 'ui']
 
 export const FeedPage = () => {
   const isAuthed = useAuthStore((s) => !!s.accessToken)
@@ -28,6 +26,11 @@ export const FeedPage = () => {
   }
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useFeedQuery(filters)
+
+  // Рядок фільтрів: "all" + 6 найпопулярніших тегів (за реальною
+  // частотою вживання), а не статичний список категорій.
+  const { data: popularTags = [] } = usePopularTagsQuery()
+  const tagOptions = ['all', ...popularTags]
 
   // IntersectionObserver для нескінченної прокрутки
   const observerTarget = useRef<HTMLDivElement | null>(null)
@@ -70,7 +73,7 @@ export const FeedPage = () => {
       {/* Рядок фільтрації та пошуку */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 [&::-webkit-scrollbar]:hidden">
-          {POPULAR_TAGS.map((tag) => (
+          {tagOptions.map((tag) => (
             <button
               key={tag}
               type="button"

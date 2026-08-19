@@ -4,6 +4,7 @@ import { AuthInput } from '../AuthInput'
 import { AuthButton } from '../AuthButton'
 import { AvatarPicker } from '../AvatarPicker'
 import { Alert } from '../../ui/Alert'
+import { useT } from '../../../i18n'
 
 interface ProfileStepProps {
   fullName: string
@@ -30,6 +31,7 @@ export const ProfileStep = ({
   isLoading,
   error,
 }: ProfileStepProps) => {
+  const t = useT()
   const isFilled = fullName.trim().length > 0
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,7 +44,7 @@ export const ProfileStep = ({
     <AuthCard onBack={onBack}>
       <div className="flex flex-col items-center">
         <VoxelLogo className="mb-3" />
-        <h1 className="text-xl font-bold text-voxel-black">Tell us about yourself</h1>
+        <h1 className="text-xl font-bold text-voxel-black">{t.auth.register.profileTitle}</h1>
       </div>
 
       <div>
@@ -53,12 +55,12 @@ export const ProfileStep = ({
 
           <div className="flex w-full flex-col gap-1.5">
             <label htmlFor="fullName" className="text-[0.9375rem] font-semibold text-[#1A202C]">
-              Full name*
+              {t.auth.register.fullNameLabel}
             </label>
             <AuthInput
               id="fullName"
               type="text"
-              placeholder="Enter your name"
+              placeholder={t.auth.register.fullNamePlaceholder}
               value={fullName}
               onChange={(e) => onFullNameChange(e.target.value)}
               autoComplete="name"
@@ -69,12 +71,12 @@ export const ProfileStep = ({
 
           <div className="flex w-full flex-col gap-1.5">
             <label htmlFor="location" className="text-[0.9375rem] font-semibold text-[#1A202C]">
-              Location
+              {t.auth.register.locationLabel}
             </label>
             <AuthInput
               id="location"
               type="text"
-              placeholder="Enter your location"
+              placeholder={t.auth.register.locationPlaceholder}
               value={location}
               onChange={(e) => onLocationChange(e.target.value)}
               autoComplete="address-level2"
@@ -83,7 +85,7 @@ export const ProfileStep = ({
           </div>
 
           <AuthButton active={isFilled} isLoading={isLoading} className="mt-2">
-            Continue
+            {t.auth.register.continue}
           </AuthButton>
         </form>
       </div>

@@ -6,13 +6,10 @@ import { Avatar } from '../../components/ui/Avatar'
 import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
 import { Spinner } from '../../components/ui/Spinner'
+import { useT } from '../../i18n'
 
-// ВАЖЛИВО: на бекенді (apps/users) наразі немає жодної моделі чи ендпоінта
-// для даних компанії - це не Фаза 0 API контракту. Сторінка повністю
-// готова за макетом дизайнерів і робоча на рівні UI (поля, вибір логотипу),
-// але "Save change" не відправляє запит на неіснуючий ендпоінт, а чесно
-// повідомляє про це користувачу, замість того щоб імітувати збереження.
 export const CompanyPage = () => {
+  const t = useT()
   const { data: profile, isLoading } = useProfile()
 
   const [companyName, setCompanyName] = useState('')
@@ -33,14 +30,12 @@ export const CompanyPage = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    setNotice(
-      'Розділ «Company» ще не підключений до бекенду — ендпоінт для даних компанії поки не реалізований. Зміни не збережуться на сервері.'
-    )
+    setNotice(t.settings.company.notImplemented)
   }
 
   if (isLoading) {
     return (
-      <SettingsLayout title="Company">
+      <SettingsLayout title={t.settings.company.title}>
         <div className="py-20 flex justify-center">
           <Spinner size="lg" />
         </div>
@@ -49,14 +44,14 @@ export const CompanyPage = () => {
   }
 
   return (
-    <SettingsLayout title="Company">
+    <SettingsLayout title={t.settings.company.title}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-9">
         {notice && <Alert type="info" message={notice} />}
 
         <SettingsField
-          label="Company name"
+          label={t.settings.company.companyName}
           type="text"
-          placeholder="Enter company name"
+          placeholder={t.settings.company.companyNamePlaceholder}
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
         />
@@ -64,7 +59,7 @@ export const CompanyPage = () => {
         {/* Логотип компанії — перевикористовуємо Avatar (пастельна заглушка
             з першою літерою назви компанії, поки логотип не завантажено). */}
         <div className="flex flex-col gap-2">
-          <span className="text-base font-semibold text-black">Company Logo</span>
+          <span className="text-base font-semibold text-black">{t.settings.company.companyLogo}</span>
           <div className="flex flex-wrap items-center gap-4">
             <Avatar
               src={logoPreview}
@@ -79,10 +74,10 @@ export const CompanyPage = () => {
                 onClick={() => fileInputRef.current?.click()}
                 className="px-5 py-1.5 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/90 transition-colors cursor-pointer w-fit"
               >
-                Choose Logo
+                {t.settings.company.chooseLogo}
               </button>
               <span className="text-sm font-semibold text-black/38">
-                {logoFile ? logoFile.name : 'JPG, GIF or PNG, Max size of 5mb'}
+                {logoFile ? logoFile.name : t.settings.company.logoFormatHint}
               </span>
               <input
                 ref={fileInputRef}
@@ -96,7 +91,7 @@ export const CompanyPage = () => {
         </div>
 
         <SettingsField
-          label="Company URL"
+          label={t.settings.company.companyUrl}
           type="url"
           placeholder="https://mycompany.com"
           value={companyUrl}
@@ -105,7 +100,7 @@ export const CompanyPage = () => {
 
         <div className="flex justify-end">
           <Button type="submit" variant="dark">
-            Save change
+            {t.common.saveChanges}
           </Button>
         </div>
       </form>

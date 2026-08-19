@@ -5,6 +5,7 @@ import { OtpInput } from '../OtpInput'
 import { AuthButton } from '../AuthButton'
 import { Alert } from '../../ui/Alert'
 import { maskEmail } from '../../../utils/email'
+import { useT } from '../../../i18n'
 
 const CODE_LENGTH = 7
 const RESEND_COOLDOWN = 60
@@ -21,13 +22,14 @@ interface OtpStepProps {
 
 export const OtpStep = ({
   email,
-  title = "Confirm it's you",
+  title,
   onBack,
   onSubmit,
   onUsePassword,
   isLoading,
   error,
 }: OtpStepProps) => {
+  const t = useT()
   const [code, setCode] = useState<string[]>(Array(CODE_LENGTH).fill(''))
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN)
   const [localError, setLocalError] = useState<string | null>(null)
@@ -43,7 +45,7 @@ export const OtpStep = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!isComplete) {
-      setLocalError('Введіть усі 7 цифр коду.')
+      setLocalError(t.auth.otp.invalidCode)
       return
     }
     setLocalError(null)
@@ -59,11 +61,11 @@ export const OtpStep = ({
     <AuthCard onBack={onBack}>
       <div className="flex flex-col items-center">
         <VoxelLogo className="mb-5" />
-        <h1 className="text-xl font-bold text-voxel-black">{title}</h1>
+        <h1 className="text-xl font-bold text-voxel-black">{title ?? t.auth.otp.title}</h1>
         <p className="mt-2 max-w-[20rem] text-center text-sm text-voxel-gray-dark">
-          We've sent you a passcode.
+          {t.auth.otp.sentInfo}
           <br />
-          Please check your inbox at {maskEmail(email)}.
+          {t.auth.otp.checkInbox} {maskEmail(email)}.
         </p>
       </div>
 
@@ -79,18 +81,18 @@ export const OtpStep = ({
             disabled={cooldown > 0}
             className="text-sm text-voxel-gray-dark underline-offset-2 hover:underline disabled:no-underline disabled:opacity-60 cursor-pointer disabled:cursor-default"
           >
-            {cooldown > 0 ? `Resend code (${cooldown}s)` : 'Resend code'}
+            {cooldown > 0 ? t.auth.otp.resendWithCooldown(cooldown) : t.auth.otp.resend}
           </button>
 
           <AuthButton active={isComplete} isLoading={isLoading} className="mt-1">
-            Continue
+            {t.auth.otp.continue}
           </AuthButton>
         </form>
 
         <p className="mt-4 text-center text-sm text-voxel-black">
-          Can't find your code?{' '}
+          {t.auth.otp.cantFindCode}{' '}
           <button type="button" onClick={onUsePassword} className="font-semibold underline cursor-pointer">
-            Use password
+            {t.auth.otp.usePassword}
           </button>
         </p>
       </div>

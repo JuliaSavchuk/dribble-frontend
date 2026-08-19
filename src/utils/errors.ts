@@ -5,8 +5,6 @@ interface ErrorLike {
   message?: string
 }
 
-// Дістає перше повідомлення про помилку з відповіді DRF
-// (формат: { detail: "..." } або { field: ["..."] })
 export function getErrorMessage(error: unknown, fallback = 'Сталася помилка. Спробуйте ще раз.'): string {
   const err = error as ErrorLike
   const data = err?.response?.data
@@ -16,7 +14,7 @@ export function getErrorMessage(error: unknown, fallback = 'Сталася по�
     return 'Не вдалося з\'єднатися з сервером. Перевірте підключення або спробуйте пізніше.'
   }
 
-  if (!data) return fallback
+  if (!data || typeof data === 'string') return fallback
   if (data.detail) return data.detail
 
   const firstKey = Object.keys(data)[0]

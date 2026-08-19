@@ -2,31 +2,28 @@ import { useState } from 'react'
 import { SettingsLayout } from '../../components/settings/SettingsLayout'
 import { Button } from '../../components/ui/Button'
 import { Alert } from '../../components/ui/Alert'
+import { useT } from '../../i18n'
 
-// Так само, як і Company, ця сторінка не має бекенд-підтримки (немає
-// платіжного провайдера чи ендпоінта на сервері) — "Connect" чесно
-// повідомляє про це, а не імітує підключення платіжного методу.
 export const PayoutsPage = () => {
+  const t = useT()
   const [notice, setNotice] = useState('')
 
   const handleConnect = () => {
-    setNotice(
-      'Підключення способу виплат ще не реалізоване на бекенді — ця дія поки не має ефекту.'
-    )
+    setNotice(t.settings.payouts.notImplemented)
   }
 
   return (
-    <SettingsLayout title="Payouts">
+    <SettingsLayout title={t.settings.payouts.title}>
       <div className="flex flex-col gap-6 max-w-88.75">
         {notice && <Alert type="info" message={notice} />}
 
-        <h2 className="text-base font-semibold text-black">Connect a payout method</h2>
+        <h2 className="text-base font-semibold text-black">{t.settings.payouts.connectMethod}</h2>
         <p className="text-base text-black -mt-4">
-          Connect to enable sending proposal and securely accept payments on Voxel
+          {t.settings.payouts.connectDescription}
         </p>
 
         <Button type="button" variant="dark" onClick={handleConnect} className="w-fit">
-          Connect
+          {t.common.connect}
         </Button>
 
         <button
@@ -34,7 +31,7 @@ export const PayoutsPage = () => {
           onClick={handleConnect}
           className="text-sm text-black underline underline-offset-2 hover:opacity-70 transition-opacity cursor-pointer w-fit"
         >
-          Learn more
+          {t.common.learnMore}
         </button>
       </div>
     </SettingsLayout>

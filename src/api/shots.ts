@@ -24,7 +24,6 @@ export const shotsApi = {
   deleteShot: (id: string | number) => api.delete(`/shots/${id}/`),
 
   // Social API
-  // Бекенд повертає поля `liked` / `saved` (а не `is_liked` / `is_saved`). Виправлено невідповідність.
   likeShot: (id: string | number) =>
     api.post<{ liked: boolean; likes_count: number }>(`/shots/${id}/like/`),
 

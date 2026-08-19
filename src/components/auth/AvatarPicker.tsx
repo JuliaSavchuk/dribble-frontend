@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { cn } from '../../utils/cn'
+import { useT } from '../../i18n'
 
 interface AvatarPickerProps {
   preview: string | null
@@ -9,6 +10,7 @@ interface AvatarPickerProps {
 }
 
 export const AvatarPicker = ({ preview, onChange, disabled, className }: AvatarPickerProps) => {
+  const t = useT()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +24,7 @@ export const AvatarPicker = ({ preview, onChange, disabled, className }: AvatarP
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={disabled}
-        aria-label="Завантажити фото профілю"
+        aria-label={t.auth.avatarPicker.uploadLabel}
         className={cn(
           'relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full',
           'border-2 border-dashed border-voxel-gray/60 bg-white/40 transition-all duration-200',
@@ -60,9 +62,9 @@ export const AvatarPicker = ({ preview, onChange, disabled, className }: AvatarP
         />
       </button>
       <p className="text-center text-[0.6875rem] leading-tight text-voxel-gray-dark">
-        300px x 300px minimum
+        {t.auth.avatarPicker.sizeHint}
         <br />
-        JPG, GIF, or PNG. Max file size 4MB.
+        {t.auth.avatarPicker.formatHint}
       </p>
     </div>
   )

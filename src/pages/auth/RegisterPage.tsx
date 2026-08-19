@@ -13,12 +13,14 @@ import { ProfileStep } from '../../components/auth/steps/ProfileStep'
 import { Alert } from '../../components/ui/Alert'
 import { useCompleteRegistration, useGoogleLogin } from '../../hooks/useAuth'
 import { getErrorMessage, getErrorField } from '../../utils/errors'
+import { useT } from '../../i18n'
 
 type Step = 'email' | 'otp' | 'password' | 'profile'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const RegisterPage = () => {
+  const t = useT()
   const [step, setStep] = useState<Step>('email')
   const [emailError, setEmailError] = useState<string | null>(null)
 
@@ -38,7 +40,7 @@ export const RegisterPage = () => {
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!EMAIL_RE.test(email)) {
-      setEmailError('Введіть коректну email адресу.')
+      setEmailError(t.auth.register.emailInvalid)
       return
     }
     setEmailError(null)
@@ -81,9 +83,9 @@ export const RegisterPage = () => {
         <AuthCard>
           <div className="flex flex-col items-center">
             <VoxelLogo className="mb-5" />
-            <h1 className="text-xl font-bold text-voxel-black">Welcome to Voxel</h1>
+            <h1 className="text-xl font-bold text-voxel-black">{t.auth.register.welcomeTitle}</h1>
             <p className="mt-2 text-center text-sm text-voxel-gray-dark">
-              Create your account and discover world-class design talent.
+              {t.auth.register.welcomeSubtitle}
             </p>
           </div>
 
@@ -95,30 +97,30 @@ export const RegisterPage = () => {
             <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
               <AuthInput
                 type="email"
-                placeholder="Enter email address"
+                placeholder={t.auth.register.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 required
               />
-              <AuthButton active={email.length > 0}>Continue</AuthButton>
+              <AuthButton active={email.length > 0}>{t.auth.register.continue}</AuthButton>
             </form>
 
             <AuthDivider className="my-4" />
 
             <GoogleButton
-              label="Login with Google account"
+              label={t.auth.register.googleButton}
               onClick={handleGoogle}
               disabled={googleMutation.isPending}
             />
 
             <p className="mt-6 text-center text-xs text-voxel-gray-dark">
-              By continuing, you agree to our Terms and Privacy Policy.
+              {t.auth.register.terms}
             </p>
             <p className="mt-2 text-center text-sm text-voxel-black">
-              Already have an account?{' '}
+              {t.auth.register.haveAccount}{' '}
               <Link to="/login" className="font-semibold underline">
-                Sign in
+                {t.auth.register.signIn}
               </Link>
             </p>
           </div>
@@ -146,13 +148,13 @@ export const RegisterPage = () => {
     return (
       <AuthBackground>
         <NewPasswordStep
-          title="Create your password"
+          title={t.auth.register.passwordTitle}
           password={password}
           onPasswordChange={setPassword}
           confirmPassword={confirmPassword}
           onConfirmChange={setConfirmPassword}
-          confirmPlaceholder="Confirm your password"
-          submitLabel="Continue"
+          confirmPlaceholder={t.auth.register.confirmPasswordPlaceholder}
+          submitLabel={t.auth.register.continue}
           onBack={() => setStep('otp')}
           onSubmit={() => setStep('profile')}
         />

@@ -8,9 +8,6 @@ export const useSearchQuery = (q: string) => {
     queryKey: ['search', q],
     queryFn: async (): Promise<SearchResponse> => {
       const response = await searchApi.search({ q, limit: 20 })
-      // Бекенд (SearchView) повертає shots/users простими масивами замість
-      // { count, results } — нормалізуємо, щоб SearchPage.tsx не падав на
-      // data.shots.results.map / data.users.count.
       return {
         shots: normalizePaginated(response.data.shots),
         users: normalizePaginated(response.data.users),

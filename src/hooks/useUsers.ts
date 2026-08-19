@@ -35,9 +35,6 @@ export const useLikedShotsQuery = (username: string | undefined) => {
     queryKey: ['likedShots', username],
     queryFn: async ({ pageParam }) => {
       const response = await usersApi.getLikedShots(username!, { offset: pageParam, limit: 12 })
-      // BUG-8 (TESTING_PLAN.md): бекенд наразі повертає простий масив без
-      // пагінації — нормалізуємо, щоб вкладка "Liked" у UserProfilePage.tsx
-      // не падала на page.results.
       return normalizePaginated(response.data)
     },
     initialPageParam: 0,
